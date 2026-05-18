@@ -2,27 +2,38 @@
 
 Calculadora comercial para tarifas Dojo (1–3), cuota mínima, penalizaciones y propuesta imprimible al estilo PDF.
 
-## Uso
+## URL en el móvil (importante)
 
-Abre [`dojo-v2.1.html`](dojo-v2.1.html) en un navegador. Para instalarla como app (PWA) en el móvil, sirve la carpeta por **HTTPS** (no como archivo local).
+**No uses** `luismiguel1977.github.io` solo (da error 404).
+
+Abre esta dirección completa:
+
+### https://luismiguel1977.github.io/calculadora-dojo/dojo-v2.1.html
+
+## Si ves «There isn't a GitHub Pages site here»
+
+Hay que activar Pages **una vez** en GitHub:
+
+1. Abre: https://github.com/luismiguel1977/calculadora-dojo/settings/pages  
+2. En **Build and deployment** → **Source**, elige **Deploy from a branch**  
+3. **Branch:** `gh-pages` (si ya existe) o `main` · **Folder:** `/ (root)`  
+4. Pulsa **Save** y espera 2–3 minutos  
+
+Si no aparece la rama `gh-pages`, entra en **Actions** y ejecuta el workflow **Publicar GitHub Pages** (o haz un push a `main` y espera a que termine).
+
+El repositorio debe ser **público** para Pages gratuito.
+
+## Uso local
 
 ```powershell
 .\servir.ps1
 ```
 
-Luego: `http://localhost:8080/dojo-v2.1.html`
+Luego: http://localhost:8080/dojo-v2.1.html
 
-## Archivos
+## Instalar como app (PWA)
 
-| Archivo | Descripción |
-|---------|-------------|
-| `dojo-v2.1.html` | Calculadora principal |
-| `manifest.webmanifest` | Manifest PWA |
-| `sw.js` | Service worker |
-| `icons/` | Iconos de la app |
+Solo funciona con la URL **HTTPS** de arriba (no archivo local ni `http://192.168...`).
 
-## GitHub Pages
-
-Si activas Pages en este repo (rama `main`, carpeta raíz `/`), la app quedará en:
-
-`https://<usuario>.github.io/<repo>/dojo-v2.1.html`
+- **Android (Chrome):** menú ⋮ → Instalar aplicación  
+- **iPhone (Safari):** Compartir → Añadir a pantalla de inicio  
