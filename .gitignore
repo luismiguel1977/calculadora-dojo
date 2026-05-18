@@ -1,0 +1,9 @@
+# PDF ajeno al proyecto (muy pesado)
+Gaspar De Cero A Crack (1).pdf
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
