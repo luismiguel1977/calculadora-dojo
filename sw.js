@@ -1,8 +1,11 @@
 /* Service worker — Calculadora Dojo */
-var CACHE = "dojo-calc-v2.1";
+var CACHE = "dojo-calc-v2.2";
 var PRECACHE = [
+  "./",
+  "./index.html",
   "./dojo-v2.1.html",
   "./manifest.webmanifest",
+  "./icons/icon-180.png",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon.svg"

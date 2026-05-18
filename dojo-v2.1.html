@@ -12,9 +12,26 @@
   <meta name="apple-mobile-web-app-title" content="Oferta Dojo" />
   <meta name="description" content="Calculadora comercial Dojo: tarifas 1-3, cuota m&iacute;nima y comparativa." />
   <title>Calculadora Oferta Dojo</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <script>
+    (function () {
+      function appBasePath() {
+        var path = location.pathname || "/";
+        if (location.hostname.endsWith(".github.io")) {
+          var first = path.split("/").filter(Boolean)[0];
+          if (first) return "/" + first + "/";
+        }
+        if (/\.[a-z0-9]+$/i.test(path.split("/").pop() || "")) {
+          path = path.replace(/[^/]*$/, "");
+        }
+        if (path.slice(-1) !== "/") path += "/";
+        return path;
+      }
+      window.DOJO_BASE = appBasePath();
+    })();
+  </script>
+  <link rel="manifest" id="pwaManifest" href="manifest.webmanifest" />
+  <link rel="icon" id="pwaFavicon" href="icons/icon-192.png" sizes="192x192" type="image/png" />
+  <link rel="apple-touch-icon" id="pwaAppleIcon" sizes="180x180" href="icons/icon-180.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
@@ -1612,20 +1629,23 @@
     card.classList.remove("is-hidden");
     if (btn) btn.classList.add("is-hidden");
 
+    var pagesUrl = "https://luismiguel1977.github.io/calculadora-dojo/dojo-v2.1.html";
+
     if (location.protocol === "file:") {
       hint.textContent =
-        "Para instalar con icono, sube la carpeta Dojo a un servidor (HTTPS) o abre la app desde localhost. No funciona abriendo solo el archivo .html.";
+        "No funciona como archivo suelto. Abre la versi\u00f3n online (HTTPS): " + pagesUrl;
       return;
     }
 
     if (!canRegisterServiceWorker()) {
-      hint.textContent = "Abre la calculadora con HTTPS para poder instalarla como app.";
+      hint.textContent =
+        "Para instalar hace falta HTTPS. Usa: " + pagesUrl + " (no una IP tipo http://192.168...).";
       return;
     }
 
     if (isIosSafari()) {
       hint.textContent =
-        "En iPhone/iPad (Safari): pulsa Compartir y elige \u00abA\u00f1adir a pantalla de inicio\u00bb. El icono verde \u00abd\u00bb quedar\u00e1 en tu inicio.";
+        "Safari: Compartir \u2192 \u00abA\u00f1adir a pantalla de inicio\u00bb. Espera 2 s a que cargue la p\u00e1gina antes. Icono verde \u00abd\u00bb.";
       return;
     }
 
@@ -1639,9 +1659,51 @@
       "En Android (Chrome): men\u00fa \u22ee \u2192 \u00abInstalar aplicaci\u00f3n\u00bb o \u00abA\u00f1adir a pantalla de inicio\u00bb. Tambi\u00e9n puede aparecer el bot\u00f3n de abajo.";
   }
 
+  function pwaOriginUrl(path) {
+    var base = window.DOJO_BASE || "/";
+    return location.origin + base + path.replace(/^\//, "");
+  }
+
+  function applyDynamicManifest() {
+    var base = window.DOJO_BASE || "/";
+    var start = location.origin + base + "dojo-v2.1.html";
+    var scope = location.origin + base;
+    var manifest = {
+      id: scope,
+      name: "Calculadora Oferta Dojo",
+      short_name: "Oferta Dojo",
+      description: "Calculadora comercial Dojo: tarifas, cuota m\u00ednima y comparativa.",
+      start_url: start,
+      scope: scope,
+      display: "standalone",
+      orientation: "portrait",
+      background_color: "#0a1f14",
+      theme_color: "#0a1f14",
+      lang: "es",
+      icons: [
+        { src: pwaOriginUrl("icons/icon-192.png"), sizes: "192x192", type: "image/png", purpose: "any" },
+        { src: pwaOriginUrl("icons/icon-512.png"), sizes: "512x512", type: "image/png", purpose: "any" },
+        { src: pwaOriginUrl("icons/icon-512.png"), sizes: "512x512", type: "image/png", purpose: "maskable" }
+      ]
+    };
+    try {
+      var link = document.getElementById("pwaManifest");
+      if (link) link.setAttribute("href", URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" })));
+    } catch (eM) {}
+    var apple = document.getElementById("pwaAppleIcon");
+    var fav = document.getElementById("pwaFavicon");
+    var icon180 = pwaOriginUrl("icons/icon-180.png");
+    var icon192 = pwaOriginUrl("icons/icon-192.png");
+    if (apple) apple.setAttribute("href", icon180);
+    if (fav) fav.setAttribute("href", icon192);
+  }
+
   function setupPwa() {
+    applyDynamicManifest();
+
     if (canRegisterServiceWorker()) {
-      navigator.serviceWorker.register("./sw.js").catch(function () {});
+      var base = window.DOJO_BASE || "/";
+      navigator.serviceWorker.register(base + "sw.js", { scope: base }).catch(function () {});
     }
 
     window.addEventListener("beforeinstallprompt", function (e) {
