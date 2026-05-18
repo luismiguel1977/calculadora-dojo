@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a1f14" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Oferta Dojo" />
+  <meta name="description" content="Calculadora comercial Dojo: tarifas 1-3, cuota m&iacute;nima y comparativa." />
+  <title>Calculadora Oferta Dojo</title>
+  <script>
+    (function () {
+      function appBasePath() {
+        var path = location.pathname || "/";
+        if (location.hostname.endsWith(".github.io")) {
+          var first = path.split("/").filter(Boolean)[0];
+          if (first) return "/" + first + "/";
+        }
+        if (/\.[a-z0-9]+$/i.test(path.split("/").pop() || "")) {
+          path = path.replace(/[^/]*$/, "");
+        }
+        if (path.slice(-1) !== "/") path += "/";
+        return path;
+      }
+      window.DOJO_BASE = appBasePath();
+    })();
+  </script>
+  <link rel="manifest" id="pwaManifest" href="manifest.webmanifest" />
+  <link rel="icon" id="pwaFavicon" href="icons/icon-192.png" sizes="192x192" type="image/png" />
+  <link rel="apple-touch-icon" id="pwaAppleIcon" sizes="180x180" href="icons/icon-180.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --dojo-bg: #0a1f14;
+      --dojo-bg-2: #0d2818;
+      --dojo-surface: #122018;
+      --dojo-surface-2: #162a1e;
+      --dojo-border: #1f4d32;
+      --dojo-green: #33ff66;
+      --dojo-green-soft: #22dd55;
+      --dojo-green-dim: #158a3a;
+      --text: #e8fff0;
+      --text-muted: #8fc9a8;
+      --radius: 14px;
+      --font: "DM Sans", system-ui, -apple-system, sans-serif;
+      --shadow: 0 8px 32px rgba(51, 255, 102, 0.08);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.45;
+      color: var(--text);
+      background: radial-gradient(120% 80% at 50% -20%, #1a4d2e 0%, var(--dojo-bg) 45%, #050a08 100%);
+      min-height: 100dvh;
+      padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    }
+    .wrap { max-width: 520px; margin: 0 auto; }
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .logo-mark {
+      display: block;
+      width: min(92vw, 280px);
+      height: auto;
+    }
+    .card {
+      background: var(--dojo-surface);
+      border: 1px solid var(--dojo-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--dojo-green);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .row { margin-bottom: 12px; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .profile-fact-ticket {
+      margin-bottom: 12px;
+    }
+    .profile-fact-ticket > .row {
+      margin-bottom: 0;
+    }
+    input[type="number"], input[type="text"], input[type="tel"], select {
+      width: 100%;
+      font: inherit;
+      padding: 11px 12px;
+      border: 1px solid var(--dojo-border);
+      border-radius: 10px;
+      background: var(--dojo-bg-2);
+      color: var(--text);
+    }
+    input:focus, select:focus {
+      outline: 2px solid var(--dojo-green-dim);
+      outline-offset: 0;
+      border-color: var(--dojo-green);
+    }
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .toggle input { width: 18px; height: 18px; accent-color: var(--dojo-green); }
+    .results {
+      background: linear-gradient(145deg, #051208 0%, var(--dojo-bg-2) 45%, #0a3024 100%);
+      color: var(--text);
+      border: 1px solid var(--dojo-border);
+    }
+    .results h2 { color: var(--dojo-green); }
+    .big-num {
+      font-size: 1.65rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--dojo-green);
+    }
+    .sub { font-size: 0.8rem; opacity: 0.9; margin-top: 4px; color: var(--text-muted); }
+    .kv {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px 12px;
+      font-size: 0.88rem;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--dojo-border);
+    }
+    .kv span:last-child { font-weight: 600; text-align: right; color: var(--text); }
+    .pill-save {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(51, 255, 102, 0.1);
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+    .pill-save strong { color: var(--dojo-green); }
+    footer {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 20px;
+    }
+    .hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+    .recom-tarifa {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(51, 255, 102, 0.08);
+      border: 1px solid var(--dojo-border);
+      font-size: 0.85rem;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .recom-tarifa strong { color: var(--dojo-green); }
+    .fixed-vals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 400px) {
+      .fixed-vals { grid-template-columns: 1fr; }
+    }
+    .fixed-item {
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--dojo-bg-2);
+      border: 1px solid var(--dojo-border);
+    }
+    .fixed-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .fixed-num {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--dojo-green);
+    }
+    .fixed-note {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .penal-box {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--dojo-bg-2);
+      border: 1px solid var(--dojo-border);
+    }
+    .penal-box.is-disabled { opacity: 0.55; }
+    .penal-box label { margin-bottom: 6px; }
+    .penal-box input { margin-bottom: 0; }
+    .penal-status {
+      margin: 8px 0 0;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+    .penal-status strong { color: var(--dojo-green); }
+    #tarifaDesc {
+      white-space: pre-line;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .slider-row {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      background: var(--dojo-bg-2);
+      border: 1px solid var(--dojo-border);
+    }
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      accent-color: var(--dojo-green);
+      cursor: pointer;
+    }
+    details.advanced-cards {
+      border: 1px solid var(--dojo-border);
+      border-radius: var(--radius);
+      padding: 0 12px;
+      background: var(--dojo-bg-2);
+      margin-top: 8px;
+    }
+    details.advanced-cards > summary {
+      list-style: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--dojo-green);
+      padding: 12px 0;
+      user-select: none;
+    }
+    details.advanced-cards > summary::-webkit-details-marker { display: none; }
+    details.advanced-cards[open] > summary { border-bottom: 1px solid var(--dojo-border); margin-bottom: 8px; }
+    .advanced-cards-inner { padding-bottom: 8px; }
+    .is-hidden { display: none !important; }
+    .is-disabled { opacity: 0.45; pointer-events: none; }
+    .btn-print {
+      display: block;
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--dojo-bg);
+      background: var(--dojo-green);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .btn-print:hover { background: var(--dojo-green-soft); }
+    .btn-print:active { transform: scale(0.98); }
+    .btn-install {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--dojo-green);
+      background: transparent;
+      border: 2px solid var(--dojo-green);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .btn-install:hover { background: rgba(51, 255, 102, 0.1); }
+    .btn-install:active { transform: scale(0.98); }
+    .pwa-card { margin-bottom: 12px; }
+    .pwa-card h2 { font-size: 0.95rem; margin-bottom: 6px; }
+    #propuestaImpresion { display: none; }
+    .prop-sheet {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 22mm 20mm 16mm;
+      background: #ffffff;
+      color: #111111;
+      font-family: "DM Sans", system-ui, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+    .prop-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10mm;
+      margin-bottom: 5mm;
+    }
+    .prop-brand-word {
+      font-size: 52pt;
+      font-weight: 700;
+      color: #00a651;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      margin: 0;
+    }
+    .prop-brand-sub {
+      margin: 3mm 0 0;
+      font-size: 9.5pt;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      color: #666666;
+      text-transform: uppercase;
+    }
+    .prop-meta-right { text-align: right; padding-top: 3mm; }
+    .prop-meta-title {
+      margin: 0;
+      font-size: 9.5pt;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: #999999;
+      text-transform: uppercase;
+    }
+    .prop-meta-date {
+      margin: 2mm 0 0;
+      font-size: 9.5pt;
+      letter-spacing: 0.12em;
+      color: #999999;
+      text-transform: uppercase;
+    }
+    .prop-rule {
+      border: none;
+      border-top: 2.5px solid #00a651;
+      margin: 0 0 9mm;
+    }
+    .prop-client-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 8mm;
+      margin-bottom: 11mm;
+    }
+    .prop-client-lbl {
+      margin: 0 0 2mm;
+      font-size: 9.5pt;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: #888888;
+      text-transform: uppercase;
+    }
+    .prop-client-name {
+      margin: 0;
+      font-size: 28pt;
+      font-weight: 700;
+      color: #111111;
+      line-height: 1.1;
+    }
+    .prop-client-ref {
+      margin: 0;
+      padding: 2.5mm 5mm;
+      font-size: 9.5pt;
+      color: #888888;
+      background: #f3f3f3;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .prop-body {
+      display: grid;
+      grid-template-columns: 52% 48%;
+      gap: 8mm 9mm;
+      align-items: start;
+      flex: 1;
+    }
+    .prop-col-left { min-width: 0; }
+    .prop-col-right { min-width: 0; }
+    .prop-accent {
+      border-left: 5px solid #00a651;
+      padding-left: 5mm;
+      margin-bottom: 8mm;
+    }
+    .prop-lbl-spaced {
+      margin: 0 0 3mm;
+      font-size: 9pt;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: #666666;
+      text-transform: uppercase;
+      line-height: 1.35;
+    }
+    .prop-big {
+      margin: 0;
+      font-size: 30pt;
+      font-weight: 700;
+      color: #00a651;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+    .prop-meta {
+      margin: 3mm 0 0;
+      font-size: 10.5pt;
+      color: #888888;
+    }
+    .prop-cost-line {
+      margin: 0;
+      font-size: 30pt;
+      font-weight: 700;
+      color: #00a651;
+      line-height: 1.05;
+    }
+    .prop-cost-line .prop-per-mes {
+      font-size: 13pt;
+      font-weight: 600;
+      color: #888888;
+    }
+    .prop-tarifa-line {
+      margin: 3mm 0 4mm;
+      font-size: 10.5pt;
+      color: #888888;
+    }
+    .prop-mini-rows { font-size: 11.5pt; margin-bottom: 5mm; }
+    .prop-mini-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 2mm 0;
+      border-bottom: 1px solid #eeeeee;
+    }
+    .prop-mini-row:last-child { border-bottom: none; }
+    .prop-mini-row span:first-child { color: #666666; }
+    .prop-val-green { font-weight: 700; color: #00a651; }
+    .prop-val-dark { font-weight: 600; color: #111111; }
+    .prop-trial {
+      margin: 0 0 6mm;
+      padding: 5mm 6mm;
+      background: #e8f5ec;
+      border-radius: 8px;
+      font-size: 10.5pt;
+      color: #111111;
+      line-height: 1.5;
+    }
+    .prop-trial strong { color: #00a651; font-weight: 700; }
+    .prop-benefits {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3mm 4mm;
+      font-size: 10pt;
+      color: #111111;
+    }
+    .prop-benefits span::before {
+      content: "\2713 ";
+      color: #00a651;
+      font-weight: 700;
+    }
+    .prop-save-box {
+      text-align: center;
+      padding: 7mm 5mm;
+      margin-bottom: 7mm;
+      background: #e8f5ec;
+      border-radius: 8px;
+    }
+    .prop-save-annual {
+      margin: 0;
+      font-size: 38pt;
+      font-weight: 700;
+      color: #00a651;
+      line-height: 1;
+    }
+    .prop-save-sub {
+      margin: 3mm 0 0;
+      font-size: 11.5pt;
+      color: #666666;
+    }
+    .prop-save-monthly {
+      margin: 2mm 0 0;
+      font-size: 10.5pt;
+      color: #888888;
+    }
+    .prop-table-title {
+      margin: 0 0 4mm;
+      font-size: 9.5pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: #00a651;
+      text-transform: uppercase;
+    }
+    .prop-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10.5pt;
+    }
+    .prop-table th {
+      padding: 3mm 2mm 3.5mm;
+      font-size: 8.5pt;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: #888888;
+      text-transform: uppercase;
+      text-align: left;
+      border-bottom: 1px solid #dddddd;
+    }
+    .prop-table th:nth-child(2),
+    .prop-table th:nth-child(3) { text-align: right; }
+    .prop-table td {
+      padding: 3.5mm 2mm;
+      vertical-align: top;
+      border-bottom: 1px solid #eeeeee;
+      color: #333333;
+    }
+    .prop-table td:first-child { white-space: pre-line; line-height: 1.3; }
+    .prop-table td:nth-child(2),
+    .prop-table td:nth-child(3) { text-align: right; white-space: nowrap; }
+    .prop-table .col-prov { color: #cc2f24; font-weight: 600; }
+    .prop-table .col-dojo { color: #00a651; font-weight: 600; }
+    .prop-table tr.prop-total td {
+      font-weight: 700;
+      font-size: 11.5pt;
+      border-bottom: none;
+      padding-top: 4mm;
+    }
+    .prop-table tr.prop-total-annual td {
+      font-size: 13pt;
+      padding-top: 2mm;
+    }
+    .prop-footnote {
+      margin: 4mm 0 0;
+      font-size: 7.5pt;
+      color: #888888;
+      line-height: 1.45;
+    }
+    .prop-pc {
+      margin: 0 0 3mm;
+      font-size: 10pt;
+      color: #333333;
+      line-height: 1.4;
+    }
+    .prop-pc-lbl {
+      display: block;
+      font-size: 8pt;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: #888888;
+      text-transform: uppercase;
+      margin-bottom: 1mm;
+    }
+    .prop-pc-name {
+      font-weight: 700;
+      color: #111111;
+    }
+    .prop-pc-tel {
+      color: #00a651;
+      font-weight: 600;
+    }
+    .prop-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 8mm;
+      margin-top: auto;
+      padding-top: 8mm;
+      border-top: 1px solid #dddddd;
+    }
+    .prop-footer-left {
+      flex: 1;
+      min-width: 0;
+    }
+    .prop-legal {
+      margin: 0;
+      flex: 1;
+      font-size: 7.5pt;
+      color: #888888;
+      line-height: 1.45;
+    }
+    .prop-cta {
+      margin: 0;
+      font-size: 17pt;
+      font-weight: 700;
+      color: #00a651;
+      text-align: right;
+      white-space: nowrap;
+    }
+    @media print {
+      @page { size: A4 portrait; margin: 0; }
+      body {
+        margin: 0;
+        padding: 0;
+        background: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      body > .wrap { display: none !important; }
+      #propuestaImpresion { display: block !important; }
+      .prop-sheet {
+        width: 100%;
+        min-height: 277mm;
+        padding: 22mm 20mm 16mm;
+        box-sizing: border-box;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="card">
+      <h2>Tu contacto en la propuesta</h2>
+      <p class="hint" style="margin-top:0">Aparece en el PDF al imprimir (comercial / PC).</p>
+      <div class="grid-2">
+        <div class="row">
+          <label for="nombrePc">Nombre del PC</label>
+          <input type="text" id="nombrePc" placeholder="Ej. Mar&iacute;a Garc&iacute;a" autocomplete="name" />
+        </div>
+        <div class="row">
+          <label for="telefonoPc">Tel&eacute;fono del PC</label>
+          <input type="tel" id="telefonoPc" placeholder="Ej. 600 123 456" autocomplete="tel" inputmode="tel" />
+        </div>
+      </div>
+    </section>
+
+    <header>
+      <svg class="logo-mark" width="280" height="93" viewBox="0 0 108 36" xmlns="http://www.w3.org/2000/svg" aria-label="DOJO">
+        <defs>
+          <linearGradient id="dojoGrad" x1="0" y1="0" x2="108" y2="36" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#66ff99"/>
+            <stop offset="1" stop-color="#33ff66"/>
+          </linearGradient>
+        </defs>
+        <text x="54" y="28" text-anchor="middle" fill="url(#dojoGrad)" font-family="DM Sans, system-ui, sans-serif" font-size="28" font-weight="700" letter-spacing="0.06em">DOJO</text>
+      </svg>
+    </header>
+
+    <section class="card pwa-card" id="pwaInstallCard">
+      <h2>Instalar en el m&oacute;vil</h2>
+      <p class="hint" style="margin-top:0;font-size:0.8rem;word-break:break-all">
+        URL correcta:<br />
+        <strong style="color:var(--dojo-green)">https://luismiguel1977.github.io/calculadora-dojo/dojo-v2.1.html</strong>
+      </p>
+      <p class="hint" id="pwaInstallHint" style="margin-top:0"></p>
+      <button type="button" class="btn-install is-hidden" id="btnInstallPwa">A&ntilde;adir a pantalla de inicio</button>
+    </section>
+
+    <section class="card">
+      <h2>Perfil del comercio</h2>
+      <div class="row">
+        <label for="nombreCliente">Nombre del comercio / cliente</label>
+        <input type="text" id="nombreCliente" placeholder="Ej. Tienda de Vapers" autocomplete="organization" />
+      </div>
+      <div class="row">
+        <label for="numTerminales">N&uacute;mero de terminales</label>
+        <input type="number" id="numTerminales" min="1" step="1" value="1" inputmode="numeric" />
+      </div>
+      <div class="grid-2 profile-fact-ticket">
+        <div class="row">
+          <label for="cto">Facturaci&oacute;n mensual con tarjeta (EUR)</label>
+          <input type="number" id="cto" min="0" step="100" value="8000" inputmode="decimal" />
+        </div>
+        <div class="row">
+          <label for="ticket">Ticket medio (EUR)</label>
+          <input type="number" id="ticket" min="0.01" step="0.5" value="15" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="row">
+        <label class="toggle"><input type="checkbox" id="useMixta" checked /> Tarifa <strong>mixta</strong> &uacute;nica (un % en todas las nacionales)</label>
+      </div>
+      <div class="row" id="blockNacional">
+        <label id="labelNacional">Mezcla d&eacute;bito / cr&eacute;dito (nacional)</label>
+        <input type="hidden" id="pctDebit" value="50" />
+        <input type="hidden" id="pctCredit" value="50" />
+        <div id="wrapSliderDebit" class="slider-row is-hidden">
+          <div class="slider-labels">
+            <span>D&eacute;bito <strong id="lblDebit">50</strong>%</span>
+            <span>Cr&eacute;dito <strong id="lblCredit">50</strong>%</span>
+          </div>
+          <input type="range" id="sliderDebit" min="0" max="100" value="50" step="1" aria-label="Porcentaje debito" />
+          <p class="hint" style="margin-bottom:0">Mueve el control: la suma siempre es 100%.</p>
+        </div>
+        <div id="wrapMixtaHint" class="hint" style="margin-top:8px;margin-bottom:0">
+          Con mixta activa no aplica la mezcla d&eacute;bito/cr&eacute;dito; se usa un solo porcentaje sobre nacional.
+        </div>
+      </div>
+      <details class="advanced-cards" id="advancedCards">
+        <summary>Otros tipos de tarjeta (empresa, UE, fuera de UE)</summary>
+        <div class="advanced-cards-inner">
+          <div class="grid-2">
+            <div class="row">
+              <label for="pctBiz">% Volumen empresa / business</label>
+              <input type="number" id="pctBiz" min="0" max="100" value="0" step="1" />
+            </div>
+            <div class="row">
+              <label for="pctEu">% Tarjeta UE no nacional</label>
+              <input type="number" id="pctEu" min="0" max="100" value="0" />
+            </div>
+          </div>
+          <div class="row">
+            <label for="pctNonEu">% Tarjeta fuera de UE</label>
+            <input type="number" id="pctNonEu" min="0" max="100" value="0" />
+          </div>
+          <p class="hint" style="margin-top:0">El resto del volumen se trata como nacional. La suma no debe superar 100%.</p>
+        </div>
+      </details>
+      <div class="row">
+        <label class="toggle"><input type="checkbox" id="integracion" /> Integraci&oacute;n TPV (+0,10% sobre ventas; terminal integrado 15 EUR una vez, ver desglose)</label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Tarifa Dojo (Go / Pocket)</h2>
+      <div class="row">
+        <label for="tarifa">Plantilla Dojo</label>
+        <select id="tarifa">
+          <option value="1">Tarifa 1 &mdash; Est&aacute;ndar</option>
+          <option value="2">Tarifa 2</option>
+          <option value="3">Tarifa 3 (sin m&iacute;nimos)</option>
+        </select>
+      </div>
+      <p class="recom-tarifa" id="recomTarifaText" aria-live="polite"></p>
+      <div id="tarifaDesc" class="seg"></div>
+      <div class="fixed-vals">
+        <div class="fixed-item">
+          <span class="fixed-label">Cuota m&iacute;nima mensual comisiones</span>
+          <span class="fixed-num">24,95&nbsp;EUR</span>
+          <span class="fixed-note">Fijo, no editable</span>
+        </div>
+        <div class="fixed-item">
+          <span class="fixed-label">Alquiler terminal / mes sin IVA</span>
+          <span class="fixed-num">5,00&nbsp;EUR</span>
+          <span class="fixed-note">Por terminal, sin IVA</span>
+        </div>
+      </div>
+      <div class="penal-box" id="penalDojoBox">
+        <label for="pctOpsPenalDojo">% operaciones con m&iacute;nimo por operaci&oacute;n (Dojo)</label>
+        <input type="number" id="pctOpsPenalDojo" min="0" max="100" step="1" value="100" inputmode="numeric" />
+        <p class="penal-status" id="penalDojoStatus" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Competencia (para comparar)</h2>
+      <div class="row">
+        <label for="compPct">% efectivo que paga hoy (anualizado)</label>
+        <input type="number" id="compPct" min="0" max="20" step="0.01" value="0.7" />
+        <p class="hint">Usa el ejercicio del &laquo;% real&raquo; abajo si solo sabe facturaci&oacute;n y comisi&oacute;n del d&iacute;a.</p>
+      </div>
+      <div class="row">
+        <label for="compFijo">Otros costes fijos competidor / mes (EUR)</label>
+        <input type="number" id="compFijo" min="0" step="1" value="0" />
+      </div>
+      <div class="row">
+        <label for="pctTicketsPenal">% operaciones con recargo 0,05 &euro; (proveedor)</label>
+        <input type="number" id="pctTicketsPenal" min="0" max="100" step="1" value="100" />
+        <p class="hint">Solo para la comparativa impresa: % de transacciones a las que el proveedor cobra 0,05 &euro;/op adem&aacute;s del %.</p>
+      </div>
+    </section>
+
+    <section class="card results" id="resultsBox">
+      <h2>Tu oferta Dojo</h2>
+      <div class="big-num" id="totalDojo">--</div>
+      <div class="sub" id="totalSub">Coste mensual estimado (comisiones + m&iacute;nimo + alquiler terminales sin IVA). El terminal integrado 15 EUR es &uacute;nico, no entra aqu&iacute;.</div>
+      <div class="kv" id="kv"></div>
+      <div class="pill-save" id="saveLine"></div>
+      <button type="button" class="btn-print" id="btnImprimirPropuesta">Imprimir propuesta</button>
+    </section>
+
+    <section class="card">
+      <h2>% real (pitch calle)</h2>
+      <p class="hint" style="margin-top:0">&iquest;Cu&aacute;nto facturaste ayer por tarjeta? &iquest;Cu&aacute;nto te cobraron de comisiones?</p>
+      <div class="grid-2">
+        <div class="row">
+          <label for="dayVol">Facturaci&oacute;n d&iacute;a tarjeta (EUR)</label>
+          <input type="number" id="dayVol" min="0" step="10" value="500" />
+        </div>
+        <div class="row">
+          <label for="dayFee">Comisiones cobradas ese d&iacute;a (EUR)</label>
+          <input type="number" id="dayFee" min="0" step="0.1" value="3.5" />
+        </div>
+      </div>
+      <p><strong id="realPct">--</strong></p>
+      <p class="hint" id="realPitch"></p>
+    </section>
+
+    <footer>
+      DM Sans &middot; verde Dojo &middot; uso interno comercial
+    </footer>
+  </div>
+
+  <div id="propuestaImpresion" aria-hidden="true">
+    <article class="prop-sheet">
+      <div class="prop-header-top">
+        <div class="prop-brand">
+          <p class="prop-brand-word">DOJO</p>
+          <p class="prop-brand-sub">Soluciones de pago</p>
+        </div>
+        <div class="prop-meta-right">
+          <p class="prop-meta-title">Propuesta comercial</p>
+          <p class="prop-meta-date" id="printFecha">--</p>
+        </div>
+      </div>
+      <hr class="prop-rule" />
+
+      <div class="prop-client-row">
+        <div>
+          <p class="prop-client-lbl">Cliente</p>
+          <p class="prop-client-name" id="printNombreCliente">Cliente</p>
+        </div>
+        <p class="prop-client-ref">Ref: <span id="printRef">--</span></p>
+      </div>
+
+      <div class="prop-body">
+        <div class="prop-col-left">
+          <section class="prop-accent">
+            <p class="prop-lbl-spaced">Facturaci&oacute;n mensual con tarjeta</p>
+            <p class="prop-big" id="printFacturacion">--</p>
+            <p class="prop-meta" id="printFactMeta">--</p>
+          </section>
+          <section class="prop-accent">
+            <p class="prop-lbl-spaced">Coste estimado Dojo</p>
+            <p class="prop-cost-line"><span id="printCosteTotal">--</span> <span class="prop-per-mes">/mes</span></p>
+            <p class="prop-tarifa-line" id="printTarifaLinea">--</p>
+            <div class="prop-mini-rows">
+              <div class="prop-mini-row">
+                <span id="printComLabel">Comisi&oacute;n</span>
+                <span class="prop-val-green" id="printComision">--</span>
+              </div>
+              <div class="prop-mini-row">
+                <span id="printTermLabel">Terminales</span>
+                <span class="prop-val-dark" id="printTerminales">--</span>
+              </div>
+            </div>
+          </section>
+          <p class="prop-trial"><strong>1er mes de prueba sin compromiso.</strong> Si no te convence, devuelves el equipo. As&iacute; de simple.</p>
+          <div class="prop-benefits">
+            <span>Liquidaci&oacute;n diaria</span>
+            <span>Dat&aacute;fono Android</span>
+            <span>App control en tiempo real</span>
+            <span>Soporte especializado</span>
+          </div>
+        </div>
+
+        <div class="prop-col-right">
+          <section class="prop-save-box" id="printSaveBlock">
+            <p class="prop-save-annual" id="printAhorroAnual">--</p>
+            <p class="prop-save-sub">de ahorro al a&ntilde;o</p>
+            <p class="prop-save-monthly" id="printAhorroMensual">--</p>
+          </section>
+          <section>
+            <p class="prop-table-title">Comparativa de costes</p>
+            <table class="prop-table">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th>Proveedor</th>
+                  <th>Dojo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td id="printRowComLabel">Comisi&oacute;n</td>
+                  <td class="col-prov" id="printCompComision">--</td>
+                  <td class="col-dojo" id="printDojoComision">--</td>
+                </tr>
+                <tr>
+                  <td id="printRowAlqLabel">Alquiler terminales</td>
+                  <td class="col-prov" id="printCompAlquiler">--</td>
+                  <td class="col-dojo" id="printDojoAlquiler">--</td>
+                </tr>
+                <tr class="prop-total">
+                  <td>Total mensual</td>
+                  <td class="col-prov" id="printCompMensual">--</td>
+                  <td class="col-dojo" id="printDojoMensual">--</td>
+                </tr>
+                <tr class="prop-total prop-total-annual">
+                  <td>Total anual</td>
+                  <td class="col-prov" id="printCompAnual">--</td>
+                  <td class="col-dojo" id="printDojoAnual">--</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="prop-footnote" id="printFootnote">--</p>
+          </section>
+        </div>
+      </div>
+
+      <footer class="prop-footer">
+        <div class="prop-footer-left">
+          <p class="prop-pc" id="printPcBlock">
+            <span class="prop-pc-lbl">Tu contacto Dojo</span>
+            <span class="prop-pc-name" id="printPcNombre">--</span>
+            <span id="printPcSep"> &middot; </span>
+            <span class="prop-pc-tel" id="printPcTelefono">--</span>
+          </p>
+          <p class="prop-legal">DOJO &middot; C&aacute;lculo basado en datos facilitados por el comercio. Sujeto a validaci&oacute;n comercial.<br />Cuota m&iacute;n. mensual 24,95 &euro;. IVA no incl. en comisiones.</p>
+        </div>
+        <p class="prop-cta">&iquest;Empezamos la prueba?</p>
+      </footer>
+
+    </article>
+  </div>
+
+  <script>
+(function () {
+  "use strict";
+  var CUOTA_MIN_FIJA = 24.95;
+  var ALQUILER_SIN_IVA_FIJO = 5;
+  var TARIFAS = {
+    "1": {
+      label: "Tarifa 1",
+      debit: { r: 0.0029, m: 0.05 },
+      credit: { r: 0.0039, m: 0.05 },
+      mix: { r: 0.0035, m: 0.05 },
+      extraBiz: 0.022,
+      extraEu: 0.005,
+      extraNonEu: 0.015,
+      extraNonEuFix: 0.13,
+      integRate: 0.001
+    },
+    "2": {
+      label: "Tarifa 2",
+      debit: { r: 0.0039, m: 0.03 },
+      credit: { r: 0.0049, m: 0.03 },
+      mix: { r: 0.0045, m: 0.03 },
+      extraBiz: 0.022,
+      extraEu: 0.005,
+      extraNonEu: 0.015,
+      extraNonEuFix: 0.13,
+      integRate: 0.001
+    },
+    "3": {
+      label: "Tarifa 3",
+      debit: { r: 0.0049, m: 0 },
+      credit: { r: 0.0059, m: 0 },
+      mix: { r: 0.0055, m: 0 },
+      extraBiz: 0.022,
+      extraEu: 0.005,
+      extraNonEu: 0.015,
+      extraNonEuFix: 0.13,
+      integRate: 0.001
+    }
+  };
+
+  function num(id) {
+    var el = document.getElementById(id);
+    var v = parseFloat(String(el && el.value).replace(",", "."));
+    return isFinite(v) ? v : 0;
+  }
+  function bool(id) {
+    var el = document.getElementById(id);
+    return el && el.checked;
+  }
+  function textVal(id) {
+    var el = document.getElementById(id);
+    return el && el.value ? String(el.value).trim() : "";
+  }
+  function intMin(id, minVal) {
+    var v = Math.floor(num(id));
+    if (!isFinite(v) || v < minVal) return minVal;
+    return v;
+  }
+  function fmtEuro(n) {
+    return (Math.round(n * 100) / 100).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+  }
+  function fmtEuroPrint(n) {
+    var rounded = Math.round(n * 100) / 100;
+    var noDec = rounded >= 1000 && Math.abs(rounded - Math.round(rounded)) < 0.001;
+    return (
+      rounded.toLocaleString("es-ES", {
+        minimumFractionDigits: noDec ? 0 : 2,
+        maximumFractionDigits: noDec ? 0 : 2
+      }) + " \u20ac"
+    );
+  }
+  function clampPct(v) {
+    if (!isFinite(v) || v < 0) return 0;
+    if (v > 100) return 100;
+    return v;
+  }
+  function computePrintComparativa(r) {
+    var compPct = Math.max(0, num("compPct")) / 100;
+    var compFijo = Math.max(0, num("compFijo"));
+    var pctPen = clampPct(num("pctTicketsPenal")) / 100;
+    var compComision = r.cto * compPct + pctPen * r.n * 0.05;
+    var alquilerPrint = r.alquilerSinIva;
+    var dojoComision = r.afterMin;
+    var totalCompPrint = compComision + compFijo + alquilerPrint;
+    var totalDojoPrint = dojoComision + alquilerPrint;
+    return {
+      compComision: compComision,
+      dojoComision: dojoComision,
+      alquilerPrint: alquilerPrint,
+      totalCompPrint: totalCompPrint,
+      totalDojoPrint: totalDojoPrint,
+      savePrint: totalCompPrint - totalDojoPrint,
+      pctPenPct: pctPen * 100
+    };
+  }
+  function fmtPct(n) {
+    return (Math.round(n * 1000) / 1000).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + "%";
+  }
+  function umbralMinimoTicket(rate, minFee) {
+    if (minFee <= 0 || rate <= 0) return Infinity;
+    return minFee / rate;
+  }
+  function pctPenalDojoParaRate(ticket, rate, minFee) {
+    if (minFee <= 0 || rate <= 0) return 0;
+    if (ticket >= umbralMinimoTicket(rate, minFee) - 1e-9) return 0;
+    return clampPct(num("pctOpsPenalDojo")) / 100;
+  }
+  function feePerTxn(ticket, rate, minFee, pctPenal) {
+    var raw = ticket * rate;
+    if (minFee <= 0) return raw;
+    if (raw >= minFee - 1e-9) return raw;
+    var p = pctPenal == null ? 1 : pctPenal;
+    return p * minFee + (1 - p) * raw;
+  }
+
+  function computeWithTarifaKey(tarifaKey) {
+    var cto = Math.max(0, num("cto"));
+    var ticket = Math.max(0.01, num("ticket"));
+    var ivaPct = 21;
+    var pctDebit = Math.max(0, num("pctDebit"));
+    var pctCredit = Math.max(0, num("pctCredit"));
+    var pctBiz = Math.max(0, num("pctBiz"));
+    var pctEu = Math.max(0, num("pctEu"));
+    var pctNonEu = Math.max(0, num("pctNonEu"));
+    var sumSpec = pctBiz + pctEu + pctNonEu;
+    var nat = Math.max(0, 100 - sumSpec);
+    var cuotaMin = CUOTA_MIN_FIJA;
+    var alquilerEx = ALQUILER_SIN_IVA_FIJO;
+    var compPct = Math.max(0, num("compPct")) / 100;
+    var compFijo = Math.max(0, num("compFijo"));
+    var numTerminales = intMin("numTerminales", 1);
+    var T = TARIFAS[tarifaKey] || TARIFAS["1"];
+    var useMix = bool("useMixta");
+    var integ = bool("integracion");
+    var n = cto / ticket;
+    var volNat = cto * (nat / 100);
+    var volBiz = cto * (pctBiz / 100);
+    var volEu = cto * (pctEu / 100);
+    var volNonEu = cto * (pctNonEu / 100);
+    var nNat = volNat > 0 ? volNat / ticket : 0;
+    var nBiz = volBiz > 0 ? volBiz / ticket : 0;
+    var nEu = volEu > 0 ? volEu / ticket : 0;
+    var nNon = volNonEu > 0 ? volNonEu / ticket : 0;
+
+    function natFeePerTxn() {
+      if (useMix) return feePerTxn(ticket, T.mix.r, T.mix.m, pctPenalDojoParaRate(ticket, T.mix.r, T.mix.m));
+      var pd = pctDebit + pctCredit;
+      if (pd <= 0) return feePerTxn(ticket, T.mix.r, T.mix.m, pctPenalDojoParaRate(ticket, T.mix.r, T.mix.m));
+      var wDeb = pctDebit / pd;
+      var wCred = pctCredit / pd;
+      return (
+        wDeb * feePerTxn(ticket, T.debit.r, T.debit.m, pctPenalDojoParaRate(ticket, T.debit.r, T.debit.m)) +
+        wCred * feePerTxn(ticket, T.credit.r, T.credit.m, pctPenalDojoParaRate(ticket, T.credit.r, T.credit.m))
+      );
+    }
+    var varNatComm = nNat * natFeePerTxn();
+
+    function bizFeePerTxn() {
+      var rdeb = T.debit.r + T.extraBiz;
+      var rcred = T.credit.r + T.extraBiz;
+      var rmix = T.mix.r + T.extraBiz;
+      if (useMix) return feePerTxn(ticket, rmix, T.mix.m, pctPenalDojoParaRate(ticket, rmix, T.mix.m));
+      var pd = pctDebit + pctCredit;
+      if (pd <= 0) return feePerTxn(ticket, rmix, T.mix.m, pctPenalDojoParaRate(ticket, rmix, T.mix.m));
+      var wDeb = pctDebit / pd;
+      var wCred = pctCredit / pd;
+      return (
+        wDeb * feePerTxn(ticket, rdeb, T.debit.m, pctPenalDojoParaRate(ticket, rdeb, T.debit.m)) +
+        wCred * feePerTxn(ticket, rcred, T.credit.m, pctPenalDojoParaRate(ticket, rcred, T.credit.m))
+      );
+    }
+    function euFeePerTxn() {
+      var rdeb = T.debit.r + T.extraEu;
+      var rcred = T.credit.r + T.extraEu;
+      var rmix = T.mix.r + T.extraEu;
+      if (useMix) return feePerTxn(ticket, rmix, T.mix.m, pctPenalDojoParaRate(ticket, rmix, T.mix.m));
+      var pd = pctDebit + pctCredit;
+      if (pd <= 0) return feePerTxn(ticket, rmix, T.mix.m, pctPenalDojoParaRate(ticket, rmix, T.mix.m));
+      var wDeb = pctDebit / pd;
+      var wCred = pctCredit / pd;
+      return (
+        wDeb * feePerTxn(ticket, rdeb, T.debit.m, pctPenalDojoParaRate(ticket, rdeb, T.debit.m)) +
+        wCred * feePerTxn(ticket, rcred, T.credit.m, pctPenalDojoParaRate(ticket, rcred, T.credit.m))
+      );
+    }
+    function nonEuFeePerTxn() {
+      var rdeb = T.debit.r + T.extraNonEu;
+      var rcred = T.credit.r + T.extraNonEu;
+      var rmix = T.mix.r + T.extraNonEu;
+      var base;
+      if (useMix) base = feePerTxn(ticket, rmix, T.mix.m, pctPenalDojoParaRate(ticket, rmix, T.mix.m));
+      else {
+        var pd = pctDebit + pctCredit;
+        if (pd <= 0) base = feePerTxn(ticket, rmix, T.mix.m, pctPenalDojoParaRate(ticket, rmix, T.mix.m));
+        else {
+          var wDeb = pctDebit / pd;
+          var wCred = pctCredit / pd;
+          base =
+            wDeb * feePerTxn(ticket, rdeb, T.debit.m, pctPenalDojoParaRate(ticket, rdeb, T.debit.m)) +
+            wCred * feePerTxn(ticket, rcred, T.credit.m, pctPenalDojoParaRate(ticket, rcred, T.credit.m));
+        }
+      }
+      return base + T.extraNonEuFix;
+    }
+
+    var varComm = varNatComm + nBiz * bizFeePerTxn() + nEu * euFeePerTxn() + nNon * nonEuFeePerTxn();
+    if (integ) varComm += cto * T.integRate;
+    var afterMin = Math.max(varComm, cuotaMin);
+    var alquilerSinIva = alquilerEx * numTerminales;
+    var alquilerIva = alquilerSinIva * (1 + ivaPct / 100);
+    var totalDojo = afterMin + alquilerSinIva;
+    var compVar = cto * compPct;
+    var totalComp = compVar + compFijo;
+    var totalCompPrint = compVar + compFijo + alquilerSinIva;
+    var save = totalComp - totalDojo;
+    var savePrint = totalCompPrint - totalDojo;
+
+    return {
+      cto: cto,
+      ticket: ticket,
+      n: n,
+      varComm: varComm,
+      afterMin: afterMin,
+      cuotaMin: cuotaMin,
+      alquilerSinIva: alquilerSinIva,
+      alquilerIva: alquilerIva,
+      numTerminales: numTerminales,
+      totalDojo: totalDojo,
+      totalComp: totalComp,
+      compVar: compVar,
+      compFijo: compFijo,
+      totalCompPrint: totalCompPrint,
+      save: save,
+      savePrint: savePrint,
+      nat: nat,
+      T: T,
+      useMix: useMix,
+      integ: integ,
+      integExtra: integ ? cto * T.integRate : 0,
+      tarifaKey: tarifaKey
+    };
+  }
+
+  function fmtPctRate(rate) {
+    return (Math.round(rate * 100000) / 1000).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + "%";
+  }
+
+  function lineaMinimoUmbral(nombre, rate, minF) {
+    var pct = fmtPctRate(rate);
+    if (minF <= 0 || rate <= 0) {
+      return (
+        nombre +
+        ": sin minimo por ticket; siempre " +
+        pct +
+        " del importe de la operacion."
+      );
+    }
+    var umbral = minF / rate;
+    var um = Math.round(umbral * 100) / 100;
+    return (
+      nombre +
+      ": minimo " +
+      fmtEuro(minF) +
+      " por operacion (nacional). A partir de ticket medio " +
+      fmtEuro(um) +
+      " compensa el " +
+      pct +
+      " (importe x " +
+      pct +
+      " ya no queda por debajo del minimo)."
+    );
+  }
+
+  function buildTarifaDetalle(T) {
+    if (!T) return "";
+    var lines = [T.label];
+    if (T.mix.m > 0) lines.push(lineaMinimoUmbral("Mixta", T.mix.r, T.mix.m));
+    else lines.push("Mixta: sin minimo por operacion.");
+    return lines.join("\n");
+  }
+
+  function syncSliderFromHidden() {
+    var d = Math.round(num("pctDebit"));
+    if (!isFinite(d) || d < 0) d = 0;
+    if (d > 100) d = 100;
+    document.getElementById("pctDebit").value = String(d);
+    document.getElementById("pctCredit").value = String(100 - d);
+    var s = document.getElementById("sliderDebit");
+    if (s) s.value = String(d);
+    var ld = document.getElementById("lblDebit");
+    var lc = document.getElementById("lblCredit");
+    if (ld) ld.textContent = String(d);
+    if (lc) lc.textContent = String(100 - d);
+  }
+
+  function onSliderDebit() {
+    var s = document.getElementById("sliderDebit");
+    if (!s) return;
+    var d = parseInt(s.value, 10);
+    if (!isFinite(d)) d = 50;
+    if (d < 0) d = 0;
+    if (d > 100) d = 100;
+    document.getElementById("pctDebit").value = String(d);
+    document.getElementById("pctCredit").value = String(100 - d);
+    document.getElementById("lblDebit").textContent = String(d);
+    document.getElementById("lblCredit").textContent = String(100 - d);
+    render();
+  }
+
+  function refMinimoMixta(T) {
+    return { rate: T.mix.r, minF: T.mix.m };
+  }
+
+  function updatePenalDojoUI(ticket, T, useMix, tarifaKey) {
+    var box = document.getElementById("penalDojoBox");
+    var inp = document.getElementById("pctOpsPenalDojo");
+    var st = document.getElementById("penalDojoStatus");
+    if (!box || !inp || !st) return;
+    var ref = refMinimoMixta(T);
+    var rate = ref.rate;
+    var minF = ref.minF;
+    if (tarifaKey === "3" || minF <= 0) {
+      box.classList.add("is-disabled");
+      inp.disabled = true;
+      inp.value = "0";
+      st.innerHTML = "<strong>Tarifa 3:</strong> sin m\u00ednimo por operaci\u00f3n.";
+      return;
+    }
+    var um = umbralMinimoTicket(rate, minF);
+    var umShow = Math.round(um * 100) / 100;
+    var modo = useMix ? "mixta" : "nacional (referencia mixta)";
+    if (ticket >= um - 1e-9) {
+      inp.value = "0";
+      inp.disabled = true;
+      box.classList.add("is-disabled");
+      st.innerHTML =
+        "<strong>" +
+        T.label +
+        "</strong> (" +
+        modo +
+        "): con ticket medio <strong>" +
+        fmtEuro(ticket) +
+        "</strong> (&ge; " +
+        fmtEuro(umShow) +
+        ") el m\u00ednimo de " +
+        fmtEuro(minF) +
+        " <strong>no aplica</strong>.";
+    } else {
+      inp.disabled = false;
+      box.classList.remove("is-disabled");
+      st.innerHTML =
+        "<strong>" +
+        T.label +
+        "</strong> (" +
+        modo +
+        "): m\u00ednimo " +
+        fmtEuro(minF) +
+        " por operaci\u00f3n si el ticket &lt; <strong>" +
+        fmtEuro(umShow) +
+        "</strong>. Indica el % de operaciones que lo pagan.";
+    }
+  }
+
+  function updateMixUI() {
+    var mix = bool("useMixta");
+    var slide = document.getElementById("wrapSliderDebit");
+    var hintM = document.getElementById("wrapMixtaHint");
+    var lab = document.getElementById("labelNacional");
+    if (!slide || !hintM) return;
+    if (mix) {
+      slide.classList.add("is-hidden");
+      hintM.classList.remove("is-hidden");
+      if (lab) lab.textContent = "Nacional (mixta): un solo % sobre volumen nacional.";
+    } else {
+      slide.classList.remove("is-hidden");
+      hintM.classList.add("is-hidden");
+      if (lab) lab.textContent = "Mezcla d\u00e9bito / cr\u00e9dito (nacional)";
+      syncSliderFromHidden();
+    }
+  }
+
+  var didInitTarifaSelect = false;
+
+  function getChosenTarifaKey() {
+    var keys = ["1", "2", "3"];
+    var bestK = "1";
+    var bestTotal = Infinity;
+    keys.forEach(function (k) {
+      var rr = computeWithTarifaKey(k);
+      if (rr.totalDojo < bestTotal) {
+        bestTotal = rr.totalDojo;
+        bestK = k;
+      }
+    });
+    var selTarifa = document.getElementById("tarifa");
+    if (selTarifa && keys.indexOf(selTarifa.value) !== -1) return selTarifa.value;
+    return bestK;
+  }
+
+  function mesAnioEs(d) {
+    var meses = [
+      "enero", "febrero", "marzo", "abril", "mayo", "junio",
+      "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    ];
+    return meses[d.getMonth()] + " " + d.getFullYear();
+  }
+
+  function refPropuesta(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
+    return "PRO-" + y + "-" + m + day;
+  }
+
+  function setPrintText(id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  function fillPrintPc() {
+    var nombre = textVal("nombrePc");
+    var tel = textVal("telefonoPc");
+    var block = document.getElementById("printPcBlock");
+    var sep = document.getElementById("printPcSep");
+    setPrintText("printPcNombre", nombre || "\u2014");
+    setPrintText("printPcTelefono", tel || "\u2014");
+    if (block) {
+      block.style.display = nombre || tel ? "" : "none";
+    }
+    if (sep) {
+      sep.style.display = nombre && tel ? "" : "none";
+    }
+  }
+
+  function fillPropuestaPrint(r) {
+    var now = new Date();
+    var nombre = textVal("nombreCliente") || "Cliente";
+    var ops = Math.round(r.n);
+    var compPctVal = num("compPct");
+    var useMix = r.useMix;
+    var tarifaLbl = r.T.label;
+    var mixPct = fmtPctRate(r.T.mix.r);
+    var minF = r.T.mix.m;
+    var umbral = minF > 0 && r.T.mix.r > 0 ? minF / r.T.mix.r : 0;
+    var p = computePrintComparativa(r);
+
+    setPrintText("printFecha", mesAnioEs(now).toUpperCase());
+    setPrintText("printNombreCliente", nombre);
+    setPrintText("printRef", refPropuesta(now));
+    fillPrintPc();
+    setPrintText("printFacturacion", fmtEuroPrint(r.cto));
+    setPrintText(
+      "printFactMeta",
+      "Ticket medio " +
+        fmtEuroPrint(r.ticket) +
+        " \u00b7 ~" +
+        ops.toLocaleString("es-ES") +
+        " operaciones \u00b7 " +
+        r.numTerminales +
+        (r.numTerminales === 1 ? " terminal" : " terminales")
+    );
+    setPrintText("printCosteTotal", fmtEuroPrint(p.totalDojoPrint));
+    setPrintText(
+      "printTarifaLinea",
+      tarifaLbl +
+        (useMix ? " \u00b7 Mixta " + mixPct : "") +
+        (minF > 0 ? " \u00b7 M\u00ednimo " + fmtEuroPrint(minF) + "/op." : "")
+    );
+    setPrintText("printComLabel", "Comisi\u00f3n s/ " + fmtEuroPrint(r.cto));
+    setPrintText("printComision", fmtEuroPrint(p.dojoComision));
+    setPrintText("printTermLabel", "Terminales \u00d7" + r.numTerminales);
+    setPrintText("printTerminales", fmtEuroPrint(p.alquilerPrint));
+
+    var saveBlock = document.getElementById("printSaveBlock");
+    if (p.savePrint > 0) {
+      if (saveBlock) saveBlock.style.display = "";
+      setPrintText("printAhorroAnual", fmtEuroPrint(p.savePrint * 12));
+      setPrintText("printAhorroMensual", fmtEuroPrint(p.savePrint) + " cada mes en caja");
+    } else if (saveBlock) {
+      saveBlock.style.display = "none";
+    }
+
+    setPrintText("printRowComLabel", "Comisi\u00f3n sobre\n" + fmtEuroPrint(r.cto));
+    setPrintText("printCompComision", fmtEuroPrint(p.compComision) + " *");
+    setPrintText("printDojoComision", fmtEuroPrint(p.dojoComision) + " *");
+    setPrintText(
+      "printRowAlqLabel",
+      "Alquiler terminales\n(5\u20ac/ud \u00d7 " + r.numTerminales + ")"
+    );
+    setPrintText("printCompAlquiler", fmtEuroPrint(p.alquilerPrint));
+    setPrintText("printDojoAlquiler", fmtEuroPrint(p.alquilerPrint));
+    setPrintText("printCompMensual", fmtEuroPrint(p.totalCompPrint));
+    setPrintText("printDojoMensual", fmtEuroPrint(p.totalDojoPrint));
+    setPrintText("printCompAnual", fmtEuroPrint(p.totalCompPrint * 12));
+    setPrintText("printDojoAnual", fmtEuroPrint(p.totalDojoPrint * 12));
+
+    var nota =
+      "* Proveedor: " +
+      fmtPct(compPctVal) +
+      " + 0,05\u20ac/trans (" +
+      Math.round(p.pctPenPct) +
+      "% tickets)" +
+      (r.compFijo > 0 ? " + " + fmtEuroPrint(r.compFijo) + " fijos/mes" : "") +
+      " | Dojo: " +
+      (useMix ? mixPct : tarifaLbl) +
+      (minF > 0
+        ? " (m\u00edn. " +
+          fmtEuroPrint(minF) +
+          " solo si ticket < " +
+          fmtEuroPrint(Math.round(umbral * 100) / 100) +
+          "). Con ticket de " +
+          fmtEuroPrint(r.ticket) +
+          (r.ticket >= umbral
+            ? ", el m\u00ednimo de Dojo no aplica."
+            : "; " +
+              Math.round(clampPct(num("pctOpsPenalDojo"))) +
+              "% operaciones con m\u00ednimo en el c\u00e1lculo Dojo.")
+        : ".");
+    setPrintText("printFootnote", nota);
+  }
+
+  function onImprimirPropuesta() {
+    render();
+    var r = computeWithTarifaKey(getChosenTarifaKey());
+    fillPropuestaPrint(r);
+    window.print();
+  }
+
+  function render() {
+    var keys = ["1", "2", "3"];
+    var totals = {};
+    var bestK = "1";
+    var bestTotal = Infinity;
+    keys.forEach(function (k) {
+      var rr = computeWithTarifaKey(k);
+      totals[k] = rr.totalDojo;
+      if (rr.totalDojo < bestTotal) {
+        bestTotal = rr.totalDojo;
+        bestK = k;
+      }
+    });
+    var selTarifa = document.getElementById("tarifa");
+    if (selTarifa && !didInitTarifaSelect) {
+      selTarifa.value = bestK;
+      didInitTarifaSelect = true;
+    }
+    var chosenK = bestK;
+    if (selTarifa && keys.indexOf(selTarifa.value) !== -1) {
+      chosenK = selTarifa.value;
+    }
+
+    var r = computeWithTarifaKey(chosenK);
+    var chosenTotal = totals[chosenK];
+
+    var recomEl = document.getElementById("recomTarifaText");
+    if (recomEl) {
+      var lineaOpt =
+        "<strong>La m\u00e1s barata con estos datos:</strong> " +
+        TARIFAS[bestK].label +
+        " &mdash; " +
+        fmtEuro(bestTotal) +
+        "/mes. ";
+      var lineaSel =
+        chosenK === bestK
+          ? "Coincide con la plantilla seleccionada."
+          : "<strong>C\u00e1lculo mostrado:</strong> " +
+            TARIFAS[chosenK].label +
+            " &mdash; " +
+            fmtEuro(chosenTotal) +
+            "/mes. ";
+      recomEl.innerHTML =
+        lineaOpt +
+        lineaSel +
+        "<span style=\"opacity:0.9\">Comparativa: T1 " +
+        fmtEuro(totals["1"]) +
+        ", T2 " +
+        fmtEuro(totals["2"]) +
+        ", T3 " +
+        fmtEuro(totals["3"]) +
+        ".</span>";
+    }
+
+    document.getElementById("totalDojo").textContent = fmtEuro(r.totalDojo);
+    document.getElementById("totalSub").textContent =
+      "Comisiones variables " + fmtEuro(r.varComm) +
+      (r.afterMin > r.varComm ? " \u2192 aplicado m\u00ednimo " + fmtEuro(r.cuotaMin) : "") +
+      " + alquiler " + r.numTerminales + " terminal(es) sin IVA " + fmtEuro(r.alquilerSinIva);
+
+    var kv = document.getElementById("kv");
+    var integRows = "";
+    if (r.integ) {
+      integRows =
+        "<span>Recargo integraci\u00f3n (0,10% sobre TPV)</span><span>" + fmtEuro(r.integExtra) + "</span>" +
+        "<span>Terminal integrado (\u00fanico)</span><span>15,00 EUR</span>";
+    }
+    kv.innerHTML =
+      "<span>Operaciones / mes (aprox.)</span><span>" + (Math.round(r.n * 10) / 10).toLocaleString("es-ES") + "</span>" +
+      "<span>Comisiones variables (antes m\u00ednimo)</span><span>" + fmtEuro(r.varComm) + "</span>" +
+      integRows +
+      "<span>Tras cuota m\u00ednima</span><span>" + fmtEuro(r.afterMin) + "</span>" +
+      "<span>Terminales \u00d7" + r.numTerminales + " (sin IVA)</span><span>" + fmtEuro(r.alquilerSinIva) + "</span>" +
+      "<span>Competencia (estim.)</span><span>" + fmtEuro(r.totalComp) + "</span>" +
+      "<span>Ahorro anual vs competencia</span><span style=\"color:#66ff99\">" + fmtEuro(r.save * 12) + "</span>";
+
+    var saveLine = document.getElementById("saveLine");
+    if (r.save > 0) {
+      saveLine.innerHTML =
+        "Con estos datos, Dojo queda <strong>" +
+        fmtEuro(r.save) +
+        "</strong> por debajo al mes vs tu referencia (~<strong>" +
+        fmtEuro(r.save * 12) +
+        "</strong> al a\u00f1o).";
+    } else if (r.save < 0) {
+      saveLine.innerHTML =
+        "La referencia de competencia queda por debajo; ajusta % competidor o revisa mix de tarjetas / tarifa negociada.";
+    } else {
+      saveLine.textContent = "Casi igualados: refina ticket o % reales.";
+    }
+
+    var elDesc = document.getElementById("tarifaDesc");
+    if (elDesc) elDesc.textContent = buildTarifaDetalle(r.T);
+
+    var dv = num("dayVol");
+    var df = num("dayFee");
+    var rp = dv > 0 ? (df / dv) * 100 : 0;
+    document.getElementById("realPct").textContent = "Porcentaje real del d\u00eda: " + fmtPct(rp);
+    document.getElementById("realPitch").textContent =
+      dv > 0
+        ? "Si te dijeron que pagabas un " + fmtPct(num("compPct")) + ", el porcentaje real de ese d\u00eda es " + fmtPct(rp) + "."
+        : "Introduce facturaci\u00f3n del d\u00eda para calcular el % real.";
+
+    updatePenalDojoUI(r.ticket, r.T, r.useMix, chosenK);
+
+    document.getElementById("resultsBox").style.opacity = "1";
+  }
+
+  ["cto", "ticket", "pctBiz", "pctEu", "pctNonEu", "compPct", "compFijo", "pctTicketsPenal", "pctOpsPenalDojo", "tarifa", "dayVol", "dayFee", "numTerminales", "nombreCliente", "nombrePc", "telefonoPc"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener("input", render);
+    if (el) el.addEventListener("change", render);
+  });
+  ["useMixta", "integracion"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el)
+      el.addEventListener("change", function () {
+        if (id === "useMixta") updateMixUI();
+        render();
+      });
+  });
+  var sd = document.getElementById("sliderDebit");
+  if (sd) sd.addEventListener("input", onSliderDebit);
+  var btnPrint = document.getElementById("btnImprimirPropuesta");
+  if (btnPrint) btnPrint.addEventListener("click", onImprimirPropuesta);
+
+  var deferredInstallPrompt = null;
+
+  function isPwaStandalone() {
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true
+    );
+  }
+
+  function isIosSafari() {
+    var ua = navigator.userAgent || "";
+    var isIos = /iphone|ipad|ipod/i.test(ua);
+    var isSafari = /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
+    return isIos && isSafari;
+  }
+
+  function canRegisterServiceWorker() {
+    return (
+      "serviceWorker" in navigator &&
+      (location.protocol === "https:" ||
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1")
+    );
+  }
+
+  function updatePwaInstallUI() {
+    var card = document.getElementById("pwaInstallCard");
+    var hint = document.getElementById("pwaInstallHint");
+    var btn = document.getElementById("btnInstallPwa");
+    if (!card || !hint) return;
+
+    if (isPwaStandalone()) {
+      card.classList.add("is-hidden");
+      return;
+    }
+
+    card.classList.remove("is-hidden");
+    if (btn) btn.classList.add("is-hidden");
+
+    var pagesUrl = "https://luismiguel1977.github.io/calculadora-dojo/dojo-v2.1.html";
+
+    if (location.protocol === "file:") {
+      hint.textContent =
+        "No funciona como archivo suelto. Abre la versi\u00f3n online (HTTPS): " + pagesUrl;
+      return;
+    }
+
+    if (!canRegisterServiceWorker()) {
+      hint.textContent =
+        "Para instalar hace falta HTTPS. Usa: " + pagesUrl + " (no una IP tipo http://192.168...).";
+      return;
+    }
+
+    if (isIosSafari()) {
+      hint.textContent =
+        "Safari: Compartir \u2192 \u00abA\u00f1adir a pantalla de inicio\u00bb. Espera 2 s a que cargue la p\u00e1gina antes. Icono verde \u00abd\u00bb.";
+      return;
+    }
+
+    if (deferredInstallPrompt) {
+      hint.textContent = "Instala la calculadora como app para abrirla con un icono, sin barra del navegador.";
+      if (btn) btn.classList.remove("is-hidden");
+      return;
+    }
+
+    hint.textContent =
+      "En Android (Chrome): men\u00fa \u22ee \u2192 \u00abInstalar aplicaci\u00f3n\u00bb o \u00abA\u00f1adir a pantalla de inicio\u00bb. Tambi\u00e9n puede aparecer el bot\u00f3n de abajo.";
+  }
+
+  function pwaOriginUrl(path) {
+    var base = window.DOJO_BASE || "/";
+    return location.origin + base + path.replace(/^\//, "");
+  }
+
+  function applyDynamicManifest() {
+    var base = window.DOJO_BASE || "/";
+    var start = location.origin + base + "dojo-v2.1.html";
+    var scope = location.origin + base;
+    var manifest = {
+      id: scope,
+      name: "Calculadora Oferta Dojo",
+      short_name: "Oferta Dojo",
+      description: "Calculadora comercial Dojo: tarifas, cuota m\u00ednima y comparativa.",
+      start_url: start,
+      scope: scope,
+      display: "standalone",
+      orientation: "portrait",
+      background_color: "#0a1f14",
+      theme_color: "#0a1f14",
+      lang: "es",
+      icons: [
+        { src: pwaOriginUrl("icons/icon-192.png"), sizes: "192x192", type: "image/png", purpose: "any" },
+        { src: pwaOriginUrl("icons/icon-512.png"), sizes: "512x512", type: "image/png", purpose: "any" },
+        { src: pwaOriginUrl("icons/icon-512.png"), sizes: "512x512", type: "image/png", purpose: "maskable" }
+      ]
+    };
+    try {
+      var link = document.getElementById("pwaManifest");
+      if (link) link.setAttribute("href", URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" })));
+    } catch (eM) {}
+    var apple = document.getElementById("pwaAppleIcon");
+    var fav = document.getElementById("pwaFavicon");
+    var icon180 = pwaOriginUrl("icons/icon-180.png");
+    var icon192 = pwaOriginUrl("icons/icon-192.png");
+    if (apple) apple.setAttribute("href", icon180);
+    if (fav) fav.setAttribute("href", icon192);
+  }
+
+  function setupPwa() {
+    applyDynamicManifest();
+
+    if (canRegisterServiceWorker()) {
+      var base = window.DOJO_BASE || "/";
+      navigator.serviceWorker.register(base + "sw.js", { scope: base }).catch(function () {});
+    }
+
+    window.addEventListener("beforeinstallprompt", function (e) {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      updatePwaInstallUI();
+    });
+
+    window.addEventListener("appinstalled", function () {
+      deferredInstallPrompt = null;
+      updatePwaInstallUI();
+    });
+
+    var btnInstall = document.getElementById("btnInstallPwa");
+    if (btnInstall) {
+      btnInstall.addEventListener("click", function () {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.finally(function () {
+          deferredInstallPrompt = null;
+          updatePwaInstallUI();
+        });
+      });
+    }
+
+    updatePwaInstallUI();
+  }
+
+  setupPwa();
+  updateMixUI();
+  render();
+})();
+  </script>
+</body>
+</html>
