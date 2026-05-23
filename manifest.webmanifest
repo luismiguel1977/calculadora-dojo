@@ -1,10 +1,9 @@
 {
-  "id": "/calculadora-dojo/",
   "name": "Calculadora Oferta Dojo",
   "short_name": "Oferta Dojo",
   "description": "Calculadora comercial Dojo: tarifas, cuota mínima y comparativa.",
-  "start_url": "/calculadora-dojo/dojo-v2.1.html",
-  "scope": "/calculadora-dojo/",
+  "start_url": "./dojo-v2.1.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a1f14",
@@ -12,19 +11,19 @@
   "lang": "es",
   "icons": [
     {
-      "src": "/calculadora-dojo/icons/icon-192.png",
+      "src": "./icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/calculadora-dojo/icons/icon-512.png",
+      "src": "./icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/calculadora-dojo/icons/icon-512.png",
+      "src": "./icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

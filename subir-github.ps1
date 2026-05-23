@@ -26,7 +26,7 @@ if ($LASTEXITCODE -ne 0) {
   if ($LASTEXITCODE -eq 0) {
     git remote add origin "https://github.com/$owner/$repoName.git"
   } else {
-    gh repo create $repoName --public --source=. --remote=origin --push --description "Calculadora comercial Dojo (PWA + propuesta PDF)"
+    gh repo create $repoName --private --source=. --remote=origin --push --description "Calculadora comercial Dojo (PWA + propuesta PDF)"
     if ($LASTEXITCODE -ne 0) { throw "No se pudo crear el repositorio." }
   }
 }
