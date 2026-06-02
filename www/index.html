@@ -779,7 +779,7 @@
       <h2>Perfil del comercio</h2>
       <div class="row">
         <label for="nombreCliente">Nombre del comercio / cliente</label>
-        <input type="text" id="nombreCliente" placeholder="Ej. Tienda de Vapers" autocomplete="organization" />
+        <input type="text" id="nombreCliente" placeholder="Ej. Bar Manolo" autocomplete="organization" />
       </div>
       <div class="row">
         <label for="numTerminales">N&uacute;mero de terminales</label>
@@ -1431,8 +1431,10 @@
         fmtEuro(minF) +
         " <strong>no aplica</strong>.";
     } else {
+      if (inp.disabled) inp.value = "100";
       inp.disabled = false;
       box.classList.remove("is-disabled");
+      if (inp.value === "0" || inp.value === "") inp.value = "100";
       st.innerHTML =
         "<strong>" +
         T.label +
