@@ -1499,6 +1499,19 @@
     return "PRO-" + y + "-" + m + day;
   }
 
+  function nombreArchivoPropuesta(nombreComercio) {
+    var limpio = (nombreComercio || "Cliente")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9 _-]/g, "")
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/_+/g, "_");
+    if (!limpio) limpio = "Cliente";
+    if (limpio.length > 50) limpio = limpio.slice(0, 50);
+    return "Propuesta_Dojo_" + limpio + "_" + refPropuesta(new Date());
+  }
+
   function setPrintText(id, text) {
     var el = document.getElementById(id);
     if (el) el.textContent = text;
@@ -1609,35 +1622,29 @@
 
   function onImprimirPropuesta() {
     var r = computeWithTarifaKey(getChosenTarifaKey());
+    var nombreComercio = textVal("nombreCliente") || "Cliente";
+    var tituloArchivo = nombreArchivoPropuesta(nombreComercio);
     fillPropuestaPrint(r);
 
     // Hide absolutely everything except the print proposal
     document.body.innerHTML = document.getElementById("propuestaImpresion").outerHTML;
 
     // Apply print layout styles
-    var sheets = document.querySelectorAll("style");
-    var printCss = "";
-    for (var i = 0; i < sheets.length; i++) printCss += sheets[i].textContent;
     var overrideStyle = document.createElement("style");
     overrideStyle.textContent = "body{background:#fff!important;padding:0!important;margin:0!important;font-family:'DM Sans',system-ui,sans-serif!important}" +
       "#propuestaImpresion{display:block!important}" +
       ".prop-sheet{width:210mm!important;max-width:100%!important;max-height:297mm!important;min-height:0!important;padding:12mm 14mm 8mm!important;box-sizing:border-box!important;overflow:hidden!important;page-break-after:avoid!important}";
     document.head.appendChild(overrideStyle);
 
-    var cliente = document.getElementById("nombreCliente");
-    var nombreCliente = cliente ? (cliente.value || cliente.textContent || "Cliente") : "Cliente";
-    var fecha = new Date().toISOString().slice(0, 10);
-    var nombreLimpio = nombreCliente.replace(/[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ ]/g, "").trim().replace(/\s+/g, "_");
-    var nuevoTitulo = "Propuesta_" + nombreLimpio + "_" + fecha;
     var tituloOriginal = document.title;
-    document.title = nuevoTitulo;
+    document.title = tituloArchivo;
     var tituloEl = document.querySelector("title");
-    if (tituloEl) { tituloEl.textContent = nuevoTitulo; }
+    if (tituloEl) tituloEl.textContent = tituloArchivo;
 
     if (window.AndroidPrint) {
       window.AndroidPrint.print();
     } else {
-      setTimeout(function () { 
+      setTimeout(function () {
         window.print();
         setTimeout(function () { document.title = tituloOriginal; }, 500);
       }, 150);
