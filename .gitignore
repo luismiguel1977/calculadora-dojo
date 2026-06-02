@@ -1,6 +1,16 @@
 # PDF ajeno al proyecto (muy pesado)
 Gaspar De Cero A Crack (1).pdf
 
+# APK / extracción temporal (la versión publicada está en apk/)
+x1kk4c.apk
+x1kk4c.zip
+_apk_extract/
+
+# Capacitor / Android (generados al compilar)
+android/
+node_modules/
+dist/
+
 # Sistema / editor
 .DS_Store
 Thumbs.db

@@ -1,0 +1,9 @@
+{
+	"appId": "com.dojo.calculadora",
+	"appName": "Calculadora Dojo",
+	"webDir": "www",
+	"bundledWebRuntime": false,
+	"android": {
+		"allowMixedContent": true
+	}
+}
