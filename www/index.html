@@ -400,32 +400,32 @@
     #propuestaImpresion { display: none; --prop-dojo: #003f33; --prop-dojo-bg: #e9f0ee; }
     body.dojo-print-mode {
       overflow: hidden;
+      margin: 0 !important;
+      padding: 0 !important;
       background: #ffffff !important;
+      min-height: 100dvh;
     }
-    body.dojo-print-mode > .wrap { display: none !important; }
+    body.dojo-print-mode > *:not(#propuestaImpresion) {
+      display: none !important;
+    }
     body.dojo-print-mode #propuestaImpresion {
       display: block !important;
       position: fixed;
       inset: 0;
       z-index: 9999;
-      overflow: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
       background: #ffffff;
       -webkit-overflow-scrolling: touch;
     }
-    body.dojo-print-mode #propuestaImpresion .prop-sheet {
-      width: 210mm;
-      max-width: 100%;
-      max-height: none;
-      min-height: 0;
-      margin: 0 auto;
-      padding: 12mm 14mm 10mm;
-      box-sizing: border-box;
-    }
     .prop-sheet {
+      --prop-pad-top: 22mm;
+      --prop-pad-x: 20mm;
+      --prop-pad-bottom: 16mm;
       width: 210mm;
       min-height: 297mm;
       margin: 0 auto;
-      padding: 22mm 20mm 16mm;
+      padding: var(--prop-pad-top) var(--prop-pad-x) var(--prop-pad-bottom);
       background: #ffffff;
       color: #111111;
       font-family: "DM Sans", system-ui, sans-serif;
@@ -435,10 +435,26 @@
       flex-direction: column;
       box-sizing: border-box;
     }
+    body.dojo-print-mode #propuestaImpresion .prop-sheet {
+      --prop-pad-top: 0;
+      --prop-pad-x: 16px;
+      --prop-pad-bottom: max(16px, env(safe-area-inset-bottom));
+      width: 100%;
+      max-width: 100%;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 0 var(--prop-pad-x) var(--prop-pad-bottom);
+      box-sizing: border-box;
+    }
+    body.dojo-print-mode .prop-header-bar {
+      margin: 0 calc(-1 * var(--prop-pad-x)) 4mm;
+      padding: max(14px, env(safe-area-inset-top)) var(--prop-pad-x) 14px;
+      width: auto;
+    }
   /* Cabecero impresión — estilo Propuesta 0,55 (solo header) */
     .prop-header-bar {
-      margin: -22mm -20mm 5mm;
-      padding: 7mm 20mm;
+      margin: calc(-1 * var(--prop-pad-top)) calc(-1 * var(--prop-pad-x)) 5mm;
+      padding: 7mm var(--prop-pad-x);
       background: var(--prop-dojo);
     }
     .prop-header-logo {
@@ -657,7 +673,16 @@
     .prop-table td:nth-child(2),
     .prop-table td:nth-child(3) { text-align: right; white-space: nowrap; }
     .prop-table .col-prov { color: #cc2f24; font-weight: 600; }
-    .prop-table .col-dojo { color: var(--prop-dojo); font-weight: 600; }
+    .prop-table th:nth-child(3),
+    .prop-table td.col-dojo {
+      background: var(--prop-dojo-bg);
+      color: var(--prop-dojo);
+      font-weight: 600;
+    }
+    .prop-table th:nth-child(3) {
+      font-weight: 700;
+      color: var(--prop-dojo);
+    }
     .prop-table tr.prop-total td {
       font-weight: 700;
       font-size: 11.5pt;
@@ -737,15 +762,27 @@
       body > .wrap { display: none !important; }
       #propuestaImpresion { display: block !important; }
       .prop-sheet {
+        --prop-pad-top: 10mm;
+        --prop-pad-x: 14mm;
+        --prop-pad-bottom: 10mm;
         width: 210mm;
         max-width: 100%;
         max-height: 297mm;
-        padding: 10mm 14mm 10mm;
+        padding: var(--prop-pad-top) var(--prop-pad-x) var(--prop-pad-bottom);
         box-sizing: border-box;
         overflow: hidden;
         page-break-after: avoid;
       }
-      .prop-header-bar { margin: -12mm -14mm 4mm; padding: 5.5mm 14mm; }
+      .prop-header-bar {
+        margin: calc(-1 * var(--prop-pad-top)) calc(-1 * var(--prop-pad-x)) 4mm;
+        padding: 5.5mm var(--prop-pad-x);
+      }
+      .prop-table th:nth-child(3),
+      .prop-table td.col-dojo {
+        background: var(--prop-dojo-bg) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
       .prop-header-logo { height: 13mm; }
       .prop-meta-title { font-size: 20pt; }
       .prop-meta-date { font-size: 9pt; }
