@@ -412,48 +412,49 @@
       flex-direction: column;
       box-sizing: border-box;
     }
+  /* Cabecero impresión — estilo Propuesta 0,55 (solo header) */
+    .prop-header-bar {
+      margin: -22mm -20mm 5mm;
+      padding: 4.5mm 20mm;
+      background: #003f33;
+    }
+    .prop-header-logo {
+      display: block;
+      height: 13mm;
+      width: auto;
+      max-width: 55mm;
+    }
     .prop-header-top {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: baseline;
       gap: 10mm;
-      margin-bottom: 5mm;
+      margin-bottom: 4mm;
+      font-family: Helvetica, Arial, sans-serif;
     }
-    .prop-brand-word {
-      font-size: 52pt;
-      font-weight: 700;
-      color: #00a651;
-      letter-spacing: -0.04em;
-      line-height: 0.95;
-      margin: 0;
-    }
-    .prop-brand-sub {
-      margin: 3mm 0 0;
-      font-size: 9.5pt;
-      font-weight: 500;
-      letter-spacing: 0.22em;
-      color: #666666;
-      text-transform: uppercase;
-    }
-    .prop-meta-right { text-align: right; padding-top: 3mm; }
+    .prop-meta-right { text-align: right; }
     .prop-meta-title {
       margin: 0;
-      font-size: 9.5pt;
-      font-weight: 500;
-      letter-spacing: 0.2em;
-      color: #999999;
-      text-transform: uppercase;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 25pt;
+      font-weight: 400;
+      color: #003f33;
+      letter-spacing: 0;
+      text-transform: none;
+      line-height: 1.15;
     }
     .prop-meta-date {
-      margin: 2mm 0 0;
-      font-size: 9.5pt;
-      letter-spacing: 0.12em;
-      color: #999999;
-      text-transform: uppercase;
+      margin: 0;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 11pt;
+      font-weight: 400;
+      letter-spacing: 0;
+      color: #7d7d7d;
+      text-transform: none;
     }
     .prop-rule {
       border: none;
-      border-top: 2.5px solid #00a651;
+      border-top: 1px solid #003f33;
       margin: 0 0 9mm;
     }
     .prop-client-row {
@@ -721,9 +722,10 @@
         overflow: hidden;
         page-break-after: avoid;
       }
-      .prop-brand-word { font-size: 42pt; }
-      .prop-brand-sub { font-size: 8pt; }
-      .prop-meta-title, .prop-meta-date { font-size: 8pt; }
+      .prop-header-bar { margin: -12mm -14mm 4mm; padding: 3.5mm 14mm; }
+      .prop-header-logo { height: 11mm; }
+      .prop-meta-title { font-size: 20pt; }
+      .prop-meta-date { font-size: 9pt; }
       .prop-rule { margin: 0 0 5mm; }
       .prop-client-row { margin-bottom: 6mm; }
       .prop-client-name { font-size: 22pt; }
@@ -966,13 +968,12 @@
 
   <div id="propuestaImpresion" aria-hidden="true">
     <article class="prop-sheet">
+      <div class="prop-header-bar">
+        <img class="prop-header-logo" src="assets/dojo-logo-header.png" alt="DOJO" width="1053" height="271" />
+      </div>
       <div class="prop-header-top">
-        <div class="prop-brand">
-          <p class="prop-brand-word">DOJO</p>
-          <p class="prop-brand-sub">Soluciones de pago</p>
-        </div>
+        <p class="prop-meta-title">Propuesta</p>
         <div class="prop-meta-right">
-          <p class="prop-meta-title">Propuesta comercial</p>
           <p class="prop-meta-date" id="printFecha">--</p>
         </div>
       </div>
