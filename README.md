@@ -20,13 +20,22 @@ Descarga e instala:
 
 En el móvil: ajustes → permitir instalar apps de esta fuente si Android lo pide.
 
-## Web y GitHub Pages
+## Web y GitHub Pages (PWA)
 
-URL (cuando Pages esté activo):
+**Calculadora:** https://luismiguel1977.github.io/calculadora-dojo/dojo-v2.1.html
 
-**https://luismiguel1977.github.io/calculadora-dojo/dojo-v2.1.html**
+**APK Android:** https://luismiguel1977.github.io/calculadora-dojo/apk/calculadora-dojo.apk
 
-Activar Pages: [Settings → Pages](https://github.com/luismiguel1977/calculadora-dojo/settings/pages) → **Deploy from a branch** → `gh-pages` o `main` → `/ (root)`.
+### Instalar en iPhone (PWA)
+
+1. Abre el enlace en **Safari** (no en Chrome).
+2. Pulsa el botón **Compartir** (cuadrado con flecha hacia arriba).
+3. Elige **Añadir a pantalla de inicio**.
+4. Confirma con **Añadir**.
+
+La app quedará como un icono en el iPhone, a pantalla completa, sin App Store.
+
+Activar Pages (si no carga): [Settings → Pages](https://github.com/luismiguel1977/calculadora-dojo/settings/pages) → **Deploy from a branch** → `gh-pages` → `/ (root)`.
 
 ## Desarrollo local
 
