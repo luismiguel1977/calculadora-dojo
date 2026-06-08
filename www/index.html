@@ -397,7 +397,7 @@
     }
     .btn-download:hover { background: rgba(51, 255, 102, 0.1); }
     #apkDownloadCard.is-hidden { display: none !important; }
-    #propuestaImpresion { display: none; }
+    #propuestaImpresion { display: none; --prop-dojo: #003f33; --prop-dojo-bg: #e9f0ee; }
     .prop-sheet {
       width: 210mm;
       min-height: 297mm;
@@ -415,14 +415,14 @@
   /* Cabecero impresión — estilo Propuesta 0,55 (solo header) */
     .prop-header-bar {
       margin: -22mm -20mm 5mm;
-      padding: 4.5mm 20mm;
-      background: #003f33;
+      padding: 7mm 20mm;
+      background: var(--prop-dojo);
     }
     .prop-header-logo {
       display: block;
-      height: 13mm;
+      height: 16mm;
       width: auto;
-      max-width: 55mm;
+      max-width: 62mm;
     }
     .prop-header-top {
       display: flex;
@@ -438,7 +438,7 @@
       font-family: Helvetica, Arial, sans-serif;
       font-size: 25pt;
       font-weight: 400;
-      color: #003f33;
+      color: var(--prop-dojo);
       letter-spacing: 0;
       text-transform: none;
       line-height: 1.15;
@@ -454,7 +454,7 @@
     }
     .prop-rule {
       border: none;
-      border-top: 1px solid #003f33;
+      border-top: 1px solid var(--prop-dojo);
       margin: 0 0 9mm;
     }
     .prop-client-row {
@@ -498,7 +498,7 @@
     .prop-col-left { min-width: 0; }
     .prop-col-right { min-width: 0; }
     .prop-accent {
-      border-left: 5px solid #00a651;
+      border-left: 5px solid var(--prop-dojo);
       padding-left: 5mm;
       margin-bottom: 8mm;
     }
@@ -515,7 +515,7 @@
       margin: 0;
       font-size: 30pt;
       font-weight: 700;
-      color: #00a651;
+      color: var(--prop-dojo);
       letter-spacing: -0.02em;
       line-height: 1.05;
     }
@@ -528,7 +528,7 @@
       margin: 0;
       font-size: 30pt;
       font-weight: 700;
-      color: #00a651;
+      color: var(--prop-dojo);
       line-height: 1.05;
     }
     .prop-cost-line .prop-per-mes {
@@ -551,18 +551,18 @@
     }
     .prop-mini-row:last-child { border-bottom: none; }
     .prop-mini-row span:first-child { color: #666666; }
-    .prop-val-green { font-weight: 700; color: #00a651; }
+    .prop-val-green { font-weight: 700; color: var(--prop-dojo); }
     .prop-val-dark { font-weight: 600; color: #111111; }
     .prop-trial {
       margin: 0 0 6mm;
       padding: 5mm 6mm;
-      background: #e8f5ec;
+      background: var(--prop-dojo-bg);
       border-radius: 8px;
       font-size: 10.5pt;
       color: #111111;
       line-height: 1.5;
     }
-    .prop-trial strong { color: #00a651; font-weight: 700; }
+    .prop-trial strong { color: var(--prop-dojo); font-weight: 700; }
     .prop-benefits {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -572,21 +572,21 @@
     }
     .prop-benefits span::before {
       content: "\2713 ";
-      color: #00a651;
+      color: var(--prop-dojo);
       font-weight: 700;
     }
     .prop-save-box {
       text-align: center;
       padding: 7mm 5mm;
       margin-bottom: 7mm;
-      background: #e8f5ec;
+      background: var(--prop-dojo-bg);
       border-radius: 8px;
     }
     .prop-save-annual {
       margin: 0;
       font-size: 38pt;
       font-weight: 700;
-      color: #00a651;
+      color: var(--prop-dojo);
       line-height: 1;
     }
     .prop-save-sub {
@@ -604,7 +604,7 @@
       font-size: 9.5pt;
       font-weight: 700;
       letter-spacing: 0.14em;
-      color: #00a651;
+      color: var(--prop-dojo);
       text-transform: uppercase;
     }
     .prop-table {
@@ -634,7 +634,7 @@
     .prop-table td:nth-child(2),
     .prop-table td:nth-child(3) { text-align: right; white-space: nowrap; }
     .prop-table .col-prov { color: #cc2f24; font-weight: 600; }
-    .prop-table .col-dojo { color: #00a651; font-weight: 600; }
+    .prop-table .col-dojo { color: var(--prop-dojo); font-weight: 600; }
     .prop-table tr.prop-total td {
       font-weight: 700;
       font-size: 11.5pt;
@@ -671,7 +671,7 @@
       color: #111111;
     }
     .prop-pc-tel {
-      color: #00a651;
+      color: var(--prop-dojo);
       font-weight: 600;
     }
     .prop-footer {
@@ -698,7 +698,7 @@
       margin: 0;
       font-size: 17pt;
       font-weight: 700;
-      color: #00a651;
+      color: var(--prop-dojo);
       text-align: right;
       white-space: nowrap;
     }
@@ -722,8 +722,8 @@
         overflow: hidden;
         page-break-after: avoid;
       }
-      .prop-header-bar { margin: -12mm -14mm 4mm; padding: 3.5mm 14mm; }
-      .prop-header-logo { height: 11mm; }
+      .prop-header-bar { margin: -12mm -14mm 4mm; padding: 5.5mm 14mm; }
+      .prop-header-logo { height: 13mm; }
       .prop-meta-title { font-size: 20pt; }
       .prop-meta-date { font-size: 9pt; }
       .prop-rule { margin: 0 0 5mm; }
@@ -1072,7 +1072,7 @@
           </p>
           <p class="prop-legal">DOJO &middot; C&aacute;lculo basado en datos facilitados por el comercio. Sujeto a validaci&oacute;n comercial.<br />Cuota m&iacute;n. mensual 24,95 &euro;. IVA no incl. en comisiones.</p>
         </div>
-        <p class="prop-cta">&iquest;Empezamos la prueba?</p>
+        <p class="prop-cta">&iquest;Comenzamos?</p>
       </footer>
 
     </article>
