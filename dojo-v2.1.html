@@ -398,6 +398,29 @@
     .btn-download:hover { background: rgba(51, 255, 102, 0.1); }
     #apkDownloadCard.is-hidden { display: none !important; }
     #propuestaImpresion { display: none; --prop-dojo: #003f33; --prop-dojo-bg: #e9f0ee; }
+    body.dojo-print-mode {
+      overflow: hidden;
+      background: #ffffff !important;
+    }
+    body.dojo-print-mode > .wrap { display: none !important; }
+    body.dojo-print-mode #propuestaImpresion {
+      display: block !important;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      overflow: auto;
+      background: #ffffff;
+      -webkit-overflow-scrolling: touch;
+    }
+    body.dojo-print-mode #propuestaImpresion .prop-sheet {
+      width: 210mm;
+      max-width: 100%;
+      max-height: none;
+      min-height: 0;
+      margin: 0 auto;
+      padding: 12mm 14mm 10mm;
+      box-sizing: border-box;
+    }
     .prop-sheet {
       width: 210mm;
       min-height: 297mm;
@@ -1621,34 +1644,52 @@
     setPrintText("printFootnote", nota);
   }
 
+  var printModeActive = false;
+  var tituloAntesImpresion = null;
+
+  function enterPrintMode(tituloArchivo) {
+    if (printModeActive) return;
+    printModeActive = true;
+    tituloAntesImpresion = document.title;
+    document.title = tituloArchivo;
+    document.body.classList.add("dojo-print-mode");
+    history.pushState({ dojoPrint: true }, "", location.href);
+  }
+
+  function exitPrintMode() {
+    if (!printModeActive) return;
+    printModeActive = false;
+    document.body.classList.remove("dojo-print-mode");
+    if (tituloAntesImpresion !== null) {
+      document.title = tituloAntesImpresion;
+      tituloAntesImpresion = null;
+    }
+  }
+
+  window.addEventListener("popstate", function () {
+    if (printModeActive) exitPrintMode();
+  });
+
+  window.addEventListener("afterprint", function () {
+    if (!printModeActive) return;
+    if (history.state && history.state.dojoPrint) {
+      history.back();
+    } else {
+      exitPrintMode();
+    }
+  });
+
   function onImprimirPropuesta() {
     var r = computeWithTarifaKey(getChosenTarifaKey());
     var nombreComercio = textVal("nombreCliente") || "Cliente";
     var tituloArchivo = nombreArchivoPropuesta(nombreComercio);
     fillPropuestaPrint(r);
-
-    // Hide absolutely everything except the print proposal
-    document.body.innerHTML = document.getElementById("propuestaImpresion").outerHTML;
-
-    // Apply print layout styles
-    var overrideStyle = document.createElement("style");
-    overrideStyle.textContent = "body{background:#fff!important;padding:0!important;margin:0!important;font-family:'DM Sans',system-ui,sans-serif!important}" +
-      "#propuestaImpresion{display:block!important}" +
-      ".prop-sheet{width:210mm!important;max-width:100%!important;max-height:297mm!important;min-height:0!important;padding:12mm 14mm 8mm!important;box-sizing:border-box!important;overflow:hidden!important;page-break-after:avoid!important}";
-    document.head.appendChild(overrideStyle);
-
-    var tituloOriginal = document.title;
-    document.title = tituloArchivo;
-    var tituloEl = document.querySelector("title");
-    if (tituloEl) tituloEl.textContent = tituloArchivo;
+    enterPrintMode(tituloArchivo);
 
     if (window.AndroidPrint) {
-      window.AndroidPrint.print();
+      setTimeout(function () { window.AndroidPrint.print(); }, 150);
     } else {
-      setTimeout(function () {
-        window.print();
-        setTimeout(function () { document.title = tituloOriginal; }, 500);
-      }, 150);
+      setTimeout(function () { window.print(); }, 150);
     }
   }
 
