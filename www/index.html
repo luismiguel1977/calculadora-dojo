@@ -463,16 +463,13 @@
       padding: 7mm var(--prop-pad-x);
       background: var(--prop-dojo);
     }
-    .prop-header-logo { display: none; }
-    .prop-header-logo-text {
+    .prop-header-logo {
       display: block;
-      font-family: Helvetica, Arial, sans-serif;
-      font-size: 26pt;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      line-height: 1;
-      color: #40ffb2;
+      height: 16mm;
+      width: auto;
+      max-width: 62mm;
     }
+    .prop-header-logo-text { display: none; }
     .prop-header-top {
       display: flex;
       justify-content: space-between;
@@ -733,24 +730,34 @@
       font-weight: 600;
     }
     .prop-footer {
+      margin-top: auto;
+      padding-top: 6mm;
+      border-top: 1px solid #dddddd;
+    }
+    .prop-footer-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      gap: 8mm;
-      margin-top: auto;
-      padding-top: 8mm;
-      border-top: 1px solid #dddddd;
+      gap: 6mm;
+      margin-bottom: 3mm;
     }
     .prop-footer-left {
       flex: 1;
       min-width: 0;
     }
-    .prop-legal {
+    .prop-legal-block {
       margin: 0;
-      flex: 1;
-      font-size: 7.5pt;
-      color: #888888;
-      line-height: 1.45;
+      padding: 0;
+      color: var(--prop-dojo);
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 5.8pt;
+      line-height: 1.32;
+    }
+    .prop-legal-block p {
+      margin: 0 0 1.5mm;
+    }
+    .prop-legal-block p:last-child {
+      margin-bottom: 0;
     }
     .prop-cta {
       margin: 0;
@@ -816,11 +823,21 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      .prop-header-logo-text { font-size: 22pt; }
+      .prop-header-logo {
+        height: 14mm;
+        max-width: 55mm;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
       .prop-footer {
-        margin-top: 4mm !important;
-        padding-top: 4mm;
+        margin-top: 3mm !important;
+        padding-top: 3mm;
         page-break-inside: avoid;
+      }
+      .prop-footer-row { margin-bottom: 2mm; gap: 4mm; }
+      .prop-legal-block {
+        font-size: 5pt;
+        line-height: 1.28;
       }
       .prop-table th:nth-child(3),
       .prop-table td.col-dojo {
@@ -848,7 +865,7 @@
       .prop-trial { margin: 0 0 4mm; padding: 3mm 4mm; font-size: 9pt; }
       .prop-benefits { font-size: 8.5pt; gap: 1.5mm 3mm; }
       .prop-save-box { padding: 4mm 4mm; margin-bottom: 4mm; }
-      .prop-save-annual { font-size: 28pt; }
+      .prop-save-annual { font-size: 24pt; }
       .prop-save-sub { font-size: 10pt; margin: 2mm 0 0; }
       .prop-save-monthly { font-size: 9pt; }
       .prop-table-title { font-size: 8pt; margin: 0 0 3mm; }
@@ -860,9 +877,8 @@
       .prop-footnote { margin: 3mm 0 0; font-size: 6.5pt; }
       .prop-pc { font-size: 9pt; margin: 0 0 2mm; }
       .prop-pc-lbl { font-size: 7pt; }
-      .prop-footer { padding-top: 5mm; gap: 5mm; }
-      .prop-legal { font-size: 6.5pt; }
-      .prop-cta { font-size: 14pt; }
+      .prop-footer { padding-top: 3mm; }
+      .prop-cta { font-size: 13pt; }
     }
   </style>
 </head>
@@ -1168,16 +1184,21 @@
       </div>
 
       <footer class="prop-footer">
-        <div class="prop-footer-left">
-          <p class="prop-pc" id="printPcBlock">
-            <span class="prop-pc-lbl">Tu contacto Dojo</span>
-            <span class="prop-pc-name" id="printPcNombre">--</span>
-            <span id="printPcSep"> &middot; </span>
-            <span class="prop-pc-tel" id="printPcTelefono">--</span>
-          </p>
-          <p class="prop-legal">DOJO &middot; C&aacute;lculo basado en datos facilitados por el comercio. Sujeto a validaci&oacute;n comercial.<br />Cuota m&iacute;n. mensual 24,95 &euro;. IVA no incl. en comisiones.</p>
+        <div class="prop-footer-row">
+          <div class="prop-footer-left">
+            <p class="prop-pc" id="printPcBlock">
+              <span class="prop-pc-lbl">Tu contacto Dojo</span>
+              <span class="prop-pc-name" id="printPcNombre">--</span>
+              <span id="printPcSep"> &middot; </span>
+              <span class="prop-pc-tel" id="printPcTelefono">--</span>
+            </p>
+          </div>
+          <p class="prop-cta">&iquest;Comenzamos?</p>
         </div>
-        <p class="prop-cta">&iquest;Comenzamos?</p>
+        <div class="prop-legal-block">
+          <p>Paymentsense Ireland Limited, que opera con el nombre comercial Dojo, est&aacute; regulada por el Banco Central de Irlanda. Nuestro n&uacute;mero de sociedad es 542166 y nuestro domicilio social est&aacute; situado en 9 Clare Street, Dubl&iacute;n 2, Dubl&iacute;n, D02 HH30 (Irlanda). CIF: 3274075SH. Paymentsense Ireland Limited opera en Espa&ntilde;a a trav&eacute;s de su sucursal Paymentsense Ireland Limited, Sucursal en Espa&ntilde;a, inscrita en el Banco de Espa&ntilde;a con n&uacute;mero 6728, con domicilio social en Paseo de la Castellana, 259C, planta 16, 28046 Madrid, Registro Mercantil de Madrid, T 46027, F 90, S 8, H M 808794, I/A 1 (5.12.23), CIF: W0284391I.</p>
+          <p>Paymentsense Ireland Limited ofrece productos regulados y no regulados.</p>
+        </div>
       </footer>
 
     </article>
@@ -1436,6 +1457,23 @@
     return (Math.round(rate * 100000) / 1000).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + "%";
   }
 
+  function dojoPrintRateDesc(r) {
+    if (r.useMix) return fmtPctRate(r.T.mix.r);
+    var pctDeb = Math.round(clampPct(num("pctDebit")));
+    var pctCred = Math.round(clampPct(num("pctCredit")));
+    return (
+      "D\u00e9bito " +
+      fmtPctRate(r.T.debit.r) +
+      " \u00b7 Cr\u00e9dito " +
+      fmtPctRate(r.T.credit.r) +
+      " (" +
+      pctDeb +
+      "% d\u00e9bito / " +
+      pctCred +
+      "% cr\u00e9dito)"
+    );
+  }
+
   function lineaMinimoUmbral(nombre, rate, minF) {
     var pct = fmtPctRate(rate);
     if (minF <= 0 || rate <= 0) {
@@ -1669,7 +1707,7 @@
     setPrintText(
       "printTarifaLinea",
       tarifaLbl +
-        (useMix ? " \u00b7 Mixta " + mixPct : "") +
+        (useMix ? " \u00b7 Mixta " + mixPct : " \u00b7 " + dojoPrintRateDesc(r)) +
         (minF > 0 ? " \u00b7 M\u00ednimo " + fmtEuroPrint(minF) + "/op." : "")
     );
     setPrintText("printComLabel", "Comisi\u00f3n s/ " + fmtEuroPrint(r.cto));
@@ -1709,7 +1747,7 @@
         : "") +
       (r.compFijo > 0 ? " + " + fmtEuroPrint(r.compFijo) + " fijos/mes" : "") +
       " | Dojo: " +
-      (useMix ? mixPct : tarifaLbl) +
+      dojoPrintRateDesc(r) +
       (minF > 0
         ? " (m\u00edn. " +
           fmtEuroPrint(minF) +
