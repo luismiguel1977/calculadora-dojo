@@ -398,15 +398,21 @@
     .btn-download:hover { background: rgba(51, 255, 102, 0.1); }
     #apkDownloadCard.is-hidden { display: none !important; }
     #propuestaImpresion { display: none; --prop-dojo: #003f33; --prop-dojo-bg: #e9f0ee; }
-    body.dojo-print-mode {
-      overflow: hidden;
+    html.dojo-print-mode,
+    html.dojo-print-mode body {
       margin: 0 !important;
       padding: 0 !important;
       background: #ffffff !important;
+    }
+    body.dojo-print-mode {
+      overflow: hidden;
       min-height: 100dvh;
     }
     body.dojo-print-mode > *:not(#propuestaImpresion) {
       display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
     }
     body.dojo-print-mode #propuestaImpresion {
       display: block !important;
@@ -457,11 +463,15 @@
       padding: 7mm var(--prop-pad-x);
       background: var(--prop-dojo);
     }
-    .prop-header-logo {
+    .prop-header-logo { display: none; }
+    .prop-header-logo-text {
       display: block;
-      height: 16mm;
-      width: auto;
-      max-width: 62mm;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 26pt;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      line-height: 1;
+      color: #40ffb2;
     }
     .prop-header-top {
       display: flex;
@@ -752,30 +762,65 @@
     }
     @media print {
       @page { size: A4 portrait; margin: 0; }
-      body {
-        margin: 0;
-        padding: 0;
+      html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
         background: #ffffff !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      body > .wrap { display: none !important; }
-      #propuestaImpresion { display: block !important; }
+      body > *:not(#propuestaImpresion),
+      body.dojo-print-mode > *:not(#propuestaImpresion) {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+      }
+      #propuestaImpresion {
+        display: block !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+      }
+      body.dojo-print-mode #propuestaImpresion {
+        position: absolute !important;
+        inset: auto !important;
+      }
       .prop-sheet {
-        --prop-pad-top: 10mm;
-        --prop-pad-x: 14mm;
-        --prop-pad-bottom: 10mm;
+        --prop-pad-top: 8mm;
+        --prop-pad-x: 12mm;
+        --prop-pad-bottom: 8mm;
+        display: block !important;
         width: 210mm;
         max-width: 100%;
-        max-height: 297mm;
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 auto;
         padding: var(--prop-pad-top) var(--prop-pad-x) var(--prop-pad-bottom);
         box-sizing: border-box;
-        overflow: hidden;
-        page-break-after: avoid;
+        overflow: visible;
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
       .prop-header-bar {
-        margin: calc(-1 * var(--prop-pad-top)) calc(-1 * var(--prop-pad-x)) 4mm;
-        padding: 5.5mm var(--prop-pad-x);
+        margin: calc(-1 * var(--prop-pad-top)) calc(-1 * var(--prop-pad-x)) 3mm;
+        padding: 5mm var(--prop-pad-x);
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .prop-header-logo-text { font-size: 22pt; }
+      .prop-footer {
+        margin-top: 4mm !important;
+        padding-top: 4mm;
+        page-break-inside: avoid;
       }
       .prop-table th:nth-child(3),
       .prop-table td.col-dojo {
@@ -783,8 +828,7 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      .prop-header-logo { height: 13mm; }
-      .prop-meta-title { font-size: 20pt; }
+      .prop-meta-title { font-size: 18pt; }
       .prop-meta-date { font-size: 9pt; }
       .prop-rule { margin: 0 0 5mm; }
       .prop-client-row { margin-bottom: 6mm; }
@@ -1029,7 +1073,8 @@
   <div id="propuestaImpresion" aria-hidden="true">
     <article class="prop-sheet">
       <div class="prop-header-bar">
-        <img class="prop-header-logo" src="assets/dojo-logo-header.png" alt="DOJO" width="1053" height="271" />
+        <img class="prop-header-logo" src="assets/dojo-logo-header.png" alt="" width="1053" height="271" aria-hidden="true" />
+        <span class="prop-header-logo-text" aria-hidden="true">DOJO</span>
       </div>
       <div class="prop-header-top">
         <p class="prop-meta-title">Propuesta</p>
@@ -1689,13 +1734,18 @@
     printModeActive = true;
     tituloAntesImpresion = document.title;
     document.title = tituloArchivo;
+    document.documentElement.classList.add("dojo-print-mode");
     document.body.classList.add("dojo-print-mode");
+    window.scrollTo(0, 0);
+    var prop = document.getElementById("propuestaImpresion");
+    if (prop) prop.scrollTop = 0;
     history.pushState({ dojoPrint: true }, "", location.href);
   }
 
   function exitPrintMode() {
     if (!printModeActive) return;
     printModeActive = false;
+    document.documentElement.classList.remove("dojo-print-mode");
     document.body.classList.remove("dojo-print-mode");
     if (tituloAntesImpresion !== null) {
       document.title = tituloAntesImpresion;
@@ -1716,6 +1766,14 @@
     }
   });
 
+  function lanzarImpresion() {
+    if (window.AndroidPrint) {
+      window.AndroidPrint.print();
+    } else {
+      window.print();
+    }
+  }
+
   function onImprimirPropuesta() {
     var r = computeWithTarifaKey(getChosenTarifaKey());
     var nombreComercio = textVal("nombreCliente") || "Cliente";
@@ -1723,11 +1781,11 @@
     fillPropuestaPrint(r);
     enterPrintMode(tituloArchivo);
 
-    if (window.AndroidPrint) {
-      setTimeout(function () { window.AndroidPrint.print(); }, 150);
-    } else {
-      setTimeout(function () { window.print(); }, 150);
-    }
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        setTimeout(lanzarImpresion, 400);
+      });
+    });
   }
 
   function render() {
