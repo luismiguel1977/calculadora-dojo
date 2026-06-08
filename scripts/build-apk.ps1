@@ -33,28 +33,38 @@ if (-not (Test-Path $ks)) {
     -storepass dojo1234 -keypass dojo1234 -dname "CN=Dojo Debug, OU=Dev, O=Dojo, L=ES, ST=ES, C=ES"
 }
 
+$wwwDir = Join-Path $root "www"
 $py = @"
 import zipfile, os, sys
 base = sys.argv[1]
-html_path = sys.argv[2]
+www_dir = sys.argv[2]
 out = sys.argv[3]
-with open(html_path, 'rb') as f:
-    new_html = f.read()
+www_files = {}
+for root, _, files in os.walk(www_dir):
+    for name in files:
+        full = os.path.join(root, name)
+        rel = os.path.relpath(full, www_dir).replace('\\\\', '/')
+        apk_path = 'assets/public/' + rel
+        with open(full, 'rb') as f:
+            www_files[apk_path] = f.read()
 with zipfile.ZipFile(base, 'r') as zin:
     with zipfile.ZipFile(out, 'w') as zout:
+        written = set()
         for item in zin.infolist():
             if item.filename.startswith('META-INF/'):
                 continue
-            data = zin.read(item.filename)
-            if item.filename == 'assets/public/index.html':
-                data = new_html
+            data = www_files.get(item.filename, zin.read(item.filename))
             zout.writestr(item, data)
-print('written', out, os.path.getsize(out))
+            written.add(item.filename)
+        for path, data in www_files.items():
+            if path not in written:
+                zout.writestr(path, data)
+print('written', out, os.path.getsize(out), 'www files', len(www_files))
 "@
 
 $pyFile = Join-Path $workDir "repack.py"
 Set-Content -Path $pyFile -Value $py -Encoding UTF8
-python $pyFile $baseApk $html $unsigned
+python $pyFile $baseApk $wwwDir $unsigned
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path $unsigned)) { throw "Fallo al reempaquetar APK." }
 
 & $zipalign -f -p 4 $unsigned $aligned

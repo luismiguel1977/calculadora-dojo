@@ -6,6 +6,7 @@ x1kk4c.apk
 x1kk4c.zip
 _apk_extract/
 build-apk/
+_ref_*
 
 # Capacitor / Android (generados al compilar)
 android/
