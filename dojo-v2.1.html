@@ -441,22 +441,72 @@
       flex-direction: column;
       box-sizing: border-box;
     }
+    /* Vista previa impresión = misma maquetación A4 que @media print */
     body.dojo-print-mode #propuestaImpresion .prop-sheet {
-      --prop-pad-top: 0;
-      --prop-pad-x: 16px;
-      --prop-pad-bottom: max(16px, env(safe-area-inset-bottom));
-      width: 100%;
+      --prop-pad-top: 8mm;
+      --prop-pad-x: 12mm;
+      --prop-pad-bottom: 7mm;
+      display: block !important;
+      width: 210mm;
       max-width: 100%;
-      min-height: 100dvh;
-      margin: 0;
-      padding: 0 var(--prop-pad-x) var(--prop-pad-bottom);
+      min-height: 0 !important;
+      margin: 0 auto;
+      padding: var(--prop-pad-top) var(--prop-pad-x) var(--prop-pad-bottom);
       box-sizing: border-box;
+      font-size: 9.5pt;
+      line-height: 1.38;
     }
+    body.dojo-print-mode .prop-body { gap: 5mm 6mm; }
     body.dojo-print-mode .prop-header-bar {
-      margin: 0 calc(-1 * var(--prop-pad-x)) 4mm;
-      padding: max(14px, env(safe-area-inset-top)) var(--prop-pad-x) 14px;
+      margin: calc(-1 * var(--prop-pad-top)) calc(-1 * var(--prop-pad-x)) 4mm;
+      padding: 5mm var(--prop-pad-x);
       width: auto;
     }
+    body.dojo-print-mode .prop-header-logo { height: 14mm; max-width: 55mm; }
+    body.dojo-print-mode .prop-meta-title { font-size: 20pt; }
+    body.dojo-print-mode .prop-meta-date { font-size: 9.5pt; }
+    body.dojo-print-mode .prop-rule { margin: 0 0 5mm; }
+    body.dojo-print-mode .prop-client-row { margin-bottom: 6mm; }
+    body.dojo-print-mode .prop-client-name { font-size: 22pt; }
+    body.dojo-print-mode .prop-client-lbl { font-size: 8.5pt; margin: 0 0 1.5mm; }
+    body.dojo-print-mode .prop-client-ref { font-size: 8.5pt; padding: 2mm 4mm; }
+    body.dojo-print-mode .prop-accent { margin-bottom: 4mm; padding-left: 3mm; border-left-width: 4px; }
+    body.dojo-print-mode .prop-lbl-spaced { font-size: 7.5pt; margin: 0 0 1.5mm; }
+    body.dojo-print-mode .prop-big { font-size: 24pt; }
+    body.dojo-print-mode .prop-meta { font-size: 9pt; margin: 1.5mm 0 0; }
+    body.dojo-print-mode .prop-cost-line { font-size: 24pt; }
+    body.dojo-print-mode .prop-cost-line .prop-per-mes { font-size: 11pt; }
+    body.dojo-print-mode .prop-tarifa-line { margin: 2mm 0 3mm; font-size: 9.5pt; }
+    body.dojo-print-mode .prop-mini-rows { font-size: 10pt; margin-bottom: 4mm; }
+    body.dojo-print-mode .prop-mini-row { padding: 1.2mm 0; }
+    body.dojo-print-mode .prop-trial { margin: 0 0 4mm; padding: 3mm 4mm; font-size: 9pt; }
+    body.dojo-print-mode .prop-benefits { font-size: 8.5pt; gap: 1.5mm 3mm; }
+    body.dojo-print-mode .prop-save-box { padding: 4mm; margin-bottom: 4mm; }
+    body.dojo-print-mode .prop-save-annual { font-size: 26pt; }
+    body.dojo-print-mode .prop-save-sub { font-size: 10pt; margin: 2mm 0 0; }
+    body.dojo-print-mode .prop-save-monthly { font-size: 9pt; }
+    body.dojo-print-mode .prop-table-title { font-size: 8.5pt; margin: 0 0 3mm; }
+    body.dojo-print-mode .prop-table { font-size: 9.5pt; }
+    body.dojo-print-mode .prop-table th { padding: 2mm 1.5mm 2.5mm; font-size: 7pt; }
+    body.dojo-print-mode .prop-table td { padding: 2.5mm 1.5mm; }
+    body.dojo-print-mode .prop-table tr.prop-total td { font-size: 10.5pt; padding-top: 3mm; }
+    body.dojo-print-mode .prop-table tr.prop-total-annual td { font-size: 11.5pt; padding-top: 1.5mm; }
+    body.dojo-print-mode .prop-footnote {
+      margin: 2mm 0 0;
+      font-size: 6pt;
+      line-height: 1.3;
+      white-space: pre-line;
+    }
+    body.dojo-print-mode .prop-footer { margin-top: 4mm !important; padding-top: 3mm; }
+    body.dojo-print-mode .prop-footer-row { margin-bottom: 2mm; gap: 4mm; }
+    body.dojo-print-mode .prop-pc { font-size: 9pt; margin: 0 0 1.5mm; }
+    body.dojo-print-mode .prop-pc-lbl { font-size: 6.5pt; }
+    body.dojo-print-mode .prop-cta { font-size: 13pt; }
+    body.dojo-print-mode .prop-legal-block {
+      font-size: 4.5pt;
+      line-height: 1.22;
+    }
+    body.dojo-print-mode .prop-legal-block p { margin: 0 0 0.8mm; }
   /* Cabecero impresión — estilo Propuesta 0,55 (solo header) */
     .prop-header-bar {
       margin: calc(-1 * var(--prop-pad-top)) calc(-1 * var(--prop-pad-x)) 5mm;
@@ -804,7 +854,7 @@
       .prop-sheet {
         --prop-pad-top: 8mm;
         --prop-pad-x: 12mm;
-        --prop-pad-bottom: 8mm;
+        --prop-pad-bottom: 7mm;
         display: block !important;
         width: 210mm;
         max-width: 100%;
@@ -813,12 +863,14 @@
         margin: 0 auto;
         padding: var(--prop-pad-top) var(--prop-pad-x) var(--prop-pad-bottom);
         box-sizing: border-box;
-        overflow: visible;
-        page-break-inside: avoid;
-        break-inside: avoid;
+        overflow: hidden;
+        page-break-after: avoid;
+        break-after: avoid;
+        font-size: 9.5pt;
+        line-height: 1.38;
       }
       .prop-header-bar {
-        margin: calc(-1 * var(--prop-pad-top)) calc(-1 * var(--prop-pad-x)) 3mm;
+        margin: calc(-1 * var(--prop-pad-top)) calc(-1 * var(--prop-pad-x)) 4mm;
         padding: 5mm var(--prop-pad-x);
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
@@ -830,54 +882,57 @@
         print-color-adjust: exact;
       }
       .prop-footer {
-        margin-top: 3mm !important;
+        margin-top: 4mm !important;
         padding-top: 3mm;
-        page-break-inside: avoid;
+        page-break-before: avoid;
+        break-before: avoid;
       }
       .prop-footer-row { margin-bottom: 2mm; gap: 4mm; }
       .prop-legal-block {
-        font-size: 5pt;
-        line-height: 1.28;
+        font-size: 4.5pt;
+        line-height: 1.22;
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
+      .prop-legal-block p { margin: 0 0 0.8mm; }
       .prop-table th:nth-child(3),
       .prop-table td.col-dojo {
         background: var(--prop-dojo-bg) !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      .prop-meta-title { font-size: 18pt; }
+      .prop-meta-title { font-size: 19pt; }
       .prop-meta-date { font-size: 9pt; }
       .prop-rule { margin: 0 0 5mm; }
       .prop-client-row { margin-bottom: 6mm; }
       .prop-client-name { font-size: 22pt; }
       .prop-client-lbl { font-size: 8pt; margin: 0 0 1mm; }
-      .prop-client-ref { font-size: 8pt; padding: 1.5mm 4mm; }
+      .prop-client-ref { font-size: 8pt; padding: 1.5mm 3.5mm; }
       .prop-body { gap: 5mm 6mm; }
       .prop-accent { margin-bottom: 4mm; padding-left: 3mm; border-left-width: 4px; }
-      .prop-lbl-spaced { font-size: 7.5pt; margin: 0 0 2mm; }
+      .prop-lbl-spaced { font-size: 7.5pt; margin: 0 0 1.5mm; }
       .prop-big { font-size: 24pt; }
-      .prop-meta { font-size: 9pt; margin: 1mm 0 0; }
+      .prop-meta { font-size: 9pt; margin: 1.5mm 0 0; }
       .prop-cost-line { font-size: 24pt; }
-      .prop-cost-line .prop-per-mes { font-size: 11pt; }
-      .prop-tarifa-line { margin: 2mm 0 3mm; font-size: 9pt; }
-      .prop-mini-rows { font-size: 10pt; margin-bottom: 3mm; }
+      .prop-cost-line .prop-per-mes { font-size: 10.5pt; }
+      .prop-tarifa-line { margin: 1.5mm 0 2.5mm; font-size: 9pt; }
+      .prop-mini-rows { font-size: 9.5pt; margin-bottom: 3mm; }
       .prop-mini-row { padding: 1mm 0; }
       .prop-trial { margin: 0 0 4mm; padding: 3mm 4mm; font-size: 9pt; }
       .prop-benefits { font-size: 8.5pt; gap: 1.5mm 3mm; }
-      .prop-save-box { padding: 4mm 4mm; margin-bottom: 4mm; }
-      .prop-save-annual { font-size: 24pt; }
-      .prop-save-sub { font-size: 10pt; margin: 2mm 0 0; }
-      .prop-save-monthly { font-size: 9pt; }
-      .prop-table-title { font-size: 8pt; margin: 0 0 3mm; }
+      .prop-save-box { padding: 4mm; margin-bottom: 4mm; }
+      .prop-save-annual { font-size: 26pt; }
+      .prop-save-sub { font-size: 9.5pt; margin: 1.5mm 0 0; }
+      .prop-save-monthly { font-size: 8.5pt; }
+      .prop-table-title { font-size: 8pt; margin: 0 0 2.5mm; }
       .prop-table { font-size: 9pt; }
-      .prop-table th { padding: 2mm 1.5mm 2.5mm; font-size: 7pt; }
-      .prop-table td { padding: 2.5mm 1.5mm; }
-      .prop-table tr.prop-total td { font-size: 10pt; padding-top: 3mm; }
-      .prop-table tr.prop-total-annual td { font-size: 11pt; padding-top: 1.5mm; }
-      .prop-footnote { margin: 3mm 0 0; font-size: 6.5pt; }
-      .prop-pc { font-size: 9pt; margin: 0 0 2mm; }
-      .prop-pc-lbl { font-size: 7pt; }
-      .prop-footer { padding-top: 3mm; }
+      .prop-table th { padding: 1.8mm 1.5mm 2mm; font-size: 6.5pt; }
+      .prop-table td { padding: 2.2mm 1.5mm; }
+      .prop-table tr.prop-total td { font-size: 10pt; padding-top: 2.5mm; }
+      .prop-table tr.prop-total-annual td { font-size: 11pt; padding-top: 1mm; }
+      .prop-footnote { margin: 2mm 0 0; font-size: 6pt; line-height: 1.3; white-space: pre-line; }
+      .prop-pc { font-size: 9pt; margin: 0 0 1.5mm; }
+      .prop-pc-lbl { font-size: 6.5pt; }
       .prop-cta { font-size: 13pt; }
     }
   </style>
@@ -1281,27 +1336,38 @@
     if (v > 100) return 100;
     return v;
   }
-  function computePrintComparativa(r) {
+  function computeCompetenciaTotals(r) {
     var compPct = Math.max(0, num("compPct")) / 100;
     var compFijo = Math.max(0, num("compFijo"));
     var compMin = Math.max(0, num("compPenalFijo"));
     var pctPen = clampPct(num("pctOpsPenalDojo")) / 100;
     var compComision = r.n * feePerTxn(r.ticket, compPct, compMin, pctPen);
-    var compAlqPerTerm = Math.max(0, num("compAlquilerTerm"));
-    var compAlquilerPrint = compAlqPerTerm * r.numTerminales;
+    var compAlquiler = Math.max(0, num("compAlquilerTerm")) * r.numTerminales;
+    return {
+      compPct: compPct,
+      compFijo: compFijo,
+      compMin: compMin,
+      compComision: compComision,
+      compAlquiler: compAlquiler,
+      totalComp: compComision + compFijo + compAlquiler,
+      pctPenPct: pctPen * 100
+    };
+  }
+
+  function computePrintComparativa(r) {
+    var comp = computeCompetenciaTotals(r);
     var alquilerPrint = r.alquilerSinIva;
     var dojoComision = r.afterMin;
-    var totalCompPrint = compComision + compFijo + compAlquilerPrint;
     var totalDojoPrint = dojoComision + alquilerPrint;
     return {
-      compComision: compComision,
+      compComision: comp.compComision,
       dojoComision: dojoComision,
-      compAlquilerPrint: compAlquilerPrint,
+      compAlquilerPrint: comp.compAlquiler,
       alquilerPrint: alquilerPrint,
-      totalCompPrint: totalCompPrint,
+      totalCompPrint: comp.totalComp,
       totalDojoPrint: totalDojoPrint,
-      savePrint: totalCompPrint - totalDojoPrint,
-      pctPenPct: pctPen * 100
+      savePrint: comp.totalComp - totalDojoPrint,
+      pctPenPct: comp.pctPenPct
     };
   }
   function fmtPct(n) {
@@ -1337,9 +1403,6 @@
     var nat = Math.max(0, 100 - sumSpec);
     var cuotaMin = CUOTA_MIN_FIJA;
     var alquilerEx = ALQUILER_SIN_IVA_FIJO;
-    var compPct = Math.max(0, num("compPct")) / 100;
-    var compFijo = Math.max(0, num("compFijo"));
-    var compAlquilerTerm = Math.max(0, num("compAlquilerTerm"));
     var numTerminales = intMin("numTerminales", 1);
     var T = TARIFAS[tarifaKey] || TARIFAS["1"];
     var useMix = bool("useMixta");
@@ -1421,11 +1484,10 @@
     var alquilerSinIva = alquilerEx * numTerminales;
     var alquilerIva = alquilerSinIva * (1 + ivaPct / 100);
     var totalDojo = afterMin + alquilerSinIva;
-    var compVar = cto * compPct;
-    var totalComp = compVar + compFijo;
-    var totalCompPrint = compVar + compFijo + alquilerSinIva;
+    var compTmp = { n: n, ticket: ticket, numTerminales: numTerminales };
+    var comp = computeCompetenciaTotals(compTmp);
+    var totalComp = comp.totalComp;
     var save = totalComp - totalDojo;
-    var savePrint = totalCompPrint - totalDojo;
 
     return {
       cto: cto,
@@ -1439,11 +1501,12 @@
       numTerminales: numTerminales,
       totalDojo: totalDojo,
       totalComp: totalComp,
-      compVar: compVar,
-      compFijo: compFijo,
-      totalCompPrint: totalCompPrint,
+      compComision: comp.compComision,
+      compAlquiler: comp.compAlquiler,
+      compFijo: comp.compFijo,
+      compPenalFijo: comp.compMin,
       save: save,
-      savePrint: savePrint,
+      savePrint: save,
       nat: nat,
       T: T,
       useMix: useMix,
@@ -1457,21 +1520,13 @@
     return (Math.round(rate * 100000) / 1000).toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 3 }) + "%";
   }
 
+  function dojoPrintDebitDesc(r) {
+    return "D\u00e9bito " + fmtPctRate(r.T.debit.r);
+  }
+
   function dojoPrintRateDesc(r) {
     if (r.useMix) return fmtPctRate(r.T.mix.r);
-    var pctDeb = Math.round(clampPct(num("pctDebit")));
-    var pctCred = Math.round(clampPct(num("pctCredit")));
-    return (
-      "D\u00e9bito " +
-      fmtPctRate(r.T.debit.r) +
-      " \u00b7 Cr\u00e9dito " +
-      fmtPctRate(r.T.credit.r) +
-      " (" +
-      pctDeb +
-      "% d\u00e9bito / " +
-      pctCred +
-      "% cr\u00e9dito)"
-    );
+    return dojoPrintDebitDesc(r);
   }
 
   function lineaMinimoUmbral(nombre, rate, minF) {
@@ -1706,9 +1761,9 @@
     setPrintText("printCosteTotal", fmtEuroPrint(p.totalDojoPrint));
     setPrintText(
       "printTarifaLinea",
-      tarifaLbl +
-        (useMix ? " \u00b7 Mixta " + mixPct : " \u00b7 " + dojoPrintRateDesc(r)) +
-        (minF > 0 ? " \u00b7 M\u00ednimo " + fmtEuroPrint(minF) + "/op." : "")
+      useMix
+        ? tarifaLbl + " \u00b7 Mixta " + mixPct + (minF > 0 ? " \u00b7 M\u00ednimo " + fmtEuroPrint(minF) + "/op." : "")
+        : tarifaLbl + " \u00b7 " + dojoPrintDebitDesc(r)
     );
     setPrintText("printComLabel", "Comisi\u00f3n s/ " + fmtEuroPrint(r.cto));
     setPrintText("printComision", fmtEuroPrint(p.dojoComision));
@@ -1738,30 +1793,18 @@
     setPrintText("printCompAnual", fmtEuroPrint(p.totalCompPrint * 12));
     setPrintText("printDojoAnual", fmtEuroPrint(p.totalDojoPrint * 12));
 
-    var compMinVal = Math.max(0, num("compPenalFijo"));
-    var nota =
-      "* Proveedor: " +
-      fmtPct(compPctVal) +
-      (p.pctPenPct > 0 && compMinVal > 0
-        ? " (" + Math.round(p.pctPenPct) + "% op. con m\u00edn. " + fmtEuroPrint(compMinVal) + ")"
-        : "") +
-      (r.compFijo > 0 ? " + " + fmtEuroPrint(r.compFijo) + " fijos/mes" : "") +
-      " | Dojo: " +
-      dojoPrintRateDesc(r) +
-      (minF > 0
-        ? " (m\u00edn. " +
-          fmtEuroPrint(minF) +
-          " solo si ticket < " +
-          fmtEuroPrint(Math.round(umbral * 100) / 100) +
-          "). Con ticket de " +
-          fmtEuroPrint(r.ticket) +
-          (r.ticket >= umbral
-            ? ", el m\u00ednimo de Dojo no aplica."
-            : "; " +
-              Math.round(clampPct(num("pctOpsPenalDojo"))) +
-              "% operaciones con m\u00ednimo en el c\u00e1lculo Dojo.")
-        : ".");
-    setPrintText("printFootnote", nota);
+    var notaProv = "* Proveedor: " + fmtPct(compPctVal);
+    var notaDojo = useMix
+      ? "Dojo: " + mixPct +
+        (minF > 0
+          ? " (m\u00edn. " +
+            fmtEuroPrint(minF) +
+            " si ticket < " +
+            fmtEuroPrint(Math.round(umbral * 100) / 100) +
+            ")"
+          : "")
+      : "Dojo: " + dojoPrintDebitDesc(r);
+    setPrintText("printFootnote", notaProv + "\n" + notaDojo);
   }
 
   var printModeActive = false;
@@ -1783,6 +1826,14 @@
   function exitPrintMode() {
     if (!printModeActive) return;
     printModeActive = false;
+    var sheet = document.querySelector("#propuestaImpresion .prop-sheet");
+    if (sheet) {
+      sheet.style.transform = "";
+      sheet.style.width = "";
+      sheet.style.transformOrigin = "";
+      sheet.style.maxHeight = "";
+      sheet.style.overflow = "";
+    }
     document.documentElement.classList.remove("dojo-print-mode");
     document.body.classList.remove("dojo-print-mode");
     if (tituloAntesImpresion !== null) {
@@ -1804,6 +1855,32 @@
     }
   });
 
+  function forzarReflowImpresion() {
+    var prop = document.getElementById("propuestaImpresion");
+    var sheet = prop && prop.querySelector(".prop-sheet");
+    if (!sheet) return;
+    sheet.style.transform = "";
+    sheet.style.width = "";
+    void sheet.offsetHeight;
+    void sheet.scrollHeight;
+    var probe = document.createElement("div");
+    probe.style.cssText = "position:absolute;visibility:hidden;height:297mm;width:1px;pointer-events:none;";
+    document.body.appendChild(probe);
+    var pageH = probe.offsetHeight;
+    document.body.removeChild(probe);
+    var contentH = sheet.scrollHeight;
+    if (pageH > 0 && contentH > pageH - 2) {
+      var scale = (pageH - 2) / contentH;
+      if (scale < 1) {
+        sheet.style.transform = "scale(" + scale + ")";
+        sheet.style.transformOrigin = "top center";
+        sheet.style.width = (100 / scale) + "%";
+        sheet.style.maxHeight = pageH + "px";
+        sheet.style.overflow = "hidden";
+      }
+    }
+  }
+
   function lanzarImpresion() {
     if (window.AndroidPrint) {
       window.AndroidPrint.print();
@@ -1821,7 +1898,11 @@
 
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        setTimeout(lanzarImpresion, 400);
+        forzarReflowImpresion();
+        setTimeout(function () {
+          forzarReflowImpresion();
+          lanzarImpresion();
+        }, 500);
       });
     });
   }
@@ -1902,13 +1983,29 @@
         "<span>Recargo integraci\u00f3n (0,10% sobre TPV)</span><span>" + fmtEuro(r.integExtra) + "</span>" +
         "<span>Terminal integrado (\u00fanico)</span><span>15,00 EUR</span>";
     }
+    var compRows =
+      "<span>Competencia comisi\u00f3n</span><span>" + fmtEuro(r.compComision) + "</span>" +
+      (r.compAlquiler > 0
+        ? "<span>Competencia alquiler terminales</span><span>" + fmtEuro(r.compAlquiler) + "</span>"
+        : "") +
+      (r.compFijo > 0
+        ? "<span>Competencia otros fijos</span><span>" + fmtEuro(r.compFijo) + "</span>"
+        : "") +
+      (r.compPenalFijo > 0
+        ? "<span>Competencia cargo fijo/op.</span><span>" +
+          fmtEuro(r.compPenalFijo) +
+          " (" +
+          Math.round(clampPct(num("pctOpsPenalDojo"))) +
+          "% op.)</span>"
+        : "");
     kv.innerHTML =
       "<span>Operaciones / mes (aprox.)</span><span>" + (Math.round(r.n * 10) / 10).toLocaleString("es-ES") + "</span>" +
       "<span>Comisiones variables (antes m\u00ednimo)</span><span>" + fmtEuro(r.varComm) + "</span>" +
       integRows +
       "<span>Tras cuota m\u00ednima</span><span>" + fmtEuro(r.afterMin) + "</span>" +
       "<span>Terminales \u00d7" + r.numTerminales + " (sin IVA)</span><span>" + fmtEuro(r.alquilerSinIva) + "</span>" +
-      "<span>Competencia (estim.)</span><span>" + fmtEuro(r.totalComp) + "</span>" +
+      compRows +
+      "<span>Competencia total</span><span>" + fmtEuro(r.totalComp) + "</span>" +
       "<span>Ahorro anual vs competencia</span><span style=\"color:#66ff99\">" + fmtEuro(r.save * 12) + "</span>";
 
     var saveLine = document.getElementById("saveLine");
