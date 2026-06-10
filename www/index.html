@@ -201,6 +201,24 @@
       margin-bottom: 12px;
     }
     .recom-tarifa strong { color: var(--dojo-green); }
+    .tarifa-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      color: #ffffff;
+      letter-spacing: 0.03em;
+    }
+    .tarifa-badge-best { background: #1a8a3a; }
+    .tarifa-badge-worse { background: #c0392b; }
+    .ticket-umbral {
+      margin: 6px 0 0;
+      font-size: 0.78rem;
+      line-height: 1.4;
+      font-weight: 500;
+    }
     .fixed-vals {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -970,6 +988,7 @@
         <div class="row">
           <label for="ticket">Ticket medio (EUR)</label>
           <input type="number" id="ticket" min="0.01" step="0.5" value="15" inputmode="decimal" />
+          <p class="ticket-umbral" id="ticketUmbralStatus" aria-live="polite"></p>
         </div>
       </div>
       <div class="row">
@@ -1048,8 +1067,8 @@
         </div>
       </div>
       <div class="penal-box" id="penalDojoBox">
-        <label for="pctOpsPenalDojo">% operaciones con m&iacute;nimo por operaci&oacute;n (Dojo)</label>
-        <input type="number" id="pctOpsPenalDojo" min="0" max="100" step="1" value="100" inputmode="numeric" />
+        <label for="pctOpsPenalDojo">% operaciones con m&iacute;nimo por operaci&oacute;n (Dojo): <strong id="lblPenal">40</strong>%</label>
+        <input type="range" id="pctOpsPenalDojo" min="0" max="100" step="5" value="40" aria-label="Porcentaje operaciones con minimo Dojo" />
         <p class="penal-status" id="penalDojoStatus" aria-live="polite"></p>
       </div>
     </section>
@@ -1595,6 +1614,48 @@
     return { rate: T.mix.r, minF: T.mix.m };
   }
 
+  function syncPenalSliderLabel() {
+    var lbl = document.getElementById("lblPenal");
+    if (lbl) lbl.textContent = String(Math.round(clampPct(num("pctOpsPenalDojo"))));
+  }
+
+  function updateTicketUmbralStatus(ticket, T, tarifaKey) {
+    var el = document.getElementById("ticketUmbralStatus");
+    if (!el) return;
+    if (tarifaKey === "3") {
+      el.textContent = "Tarifa 3: sin m\u00ednimo por operaci\u00f3n.";
+      el.style.color = "#1a8a3a";
+      return;
+    }
+    var ref = refMinimoMixta(T);
+    var minF = ref.minF;
+    var rate = ref.rate;
+    if (minF <= 0 || rate <= 0) {
+      el.textContent = "Sin m\u00ednimo por operaci\u00f3n en esta tarifa.";
+      el.style.color = "#1a8a3a";
+      return;
+    }
+    var um = umbralMinimoTicket(rate, minF);
+    var umShow = Math.round(um * 100) / 100;
+    if (ticket >= um - 1e-9) {
+      el.innerHTML =
+        "Umbral m\u00ednimo: <strong>" +
+        fmtEuro(umShow) +
+        "</strong> \u2014 tu ticket (" +
+        fmtEuro(ticket) +
+        ") est\u00e1 <strong>por encima</strong>: el m\u00ednimo por operaci\u00f3n no aplica.";
+      el.style.color = "#1a8a3a";
+    } else {
+      el.innerHTML =
+        "Umbral m\u00ednimo: <strong>" +
+        fmtEuro(umShow) +
+        "</strong> \u2014 tu ticket (" +
+        fmtEuro(ticket) +
+        ") est\u00e1 <strong>por debajo</strong>: puede aplicar el m\u00ednimo.";
+      el.style.color = "#c0392b";
+    }
+  }
+
   function updatePenalDojoUI(ticket, T, useMix, tarifaKey) {
     var box = document.getElementById("penalDojoBox");
     var inp = document.getElementById("pctOpsPenalDojo");
@@ -1630,10 +1691,9 @@
         fmtEuro(minF) +
         " <strong>no aplica</strong>.";
     } else {
-      if (inp.disabled) inp.value = "100";
       inp.disabled = false;
       box.classList.remove("is-disabled");
-      if (inp.value === "0" || inp.value === "") inp.value = "100";
+      if (inp.value === "0" || inp.value === "") inp.value = "40";
       st.innerHTML =
         "<strong>" +
         T.label +
@@ -1645,6 +1705,7 @@
         fmtEuro(umShow) +
         "</strong>. Indica el % de operaciones que lo pagan.";
     }
+    syncPenalSliderLabel();
   }
 
   function updateMixUI() {
@@ -1935,15 +1996,30 @@
 
     var recomEl = document.getElementById("recomTarifaText");
     if (recomEl) {
+      var badge =
+        chosenK === bestK
+          ? '<span class="tarifa-badge tarifa-badge-best">\u2713 MEJOR OPCI\u00d3N</span>'
+          : (function () {
+              var diff = chosenTotal - bestTotal;
+              var pctExtra = bestTotal > 0 ? (diff / bestTotal) * 100 : 0;
+              return (
+                '<span class="tarifa-badge tarifa-badge-worse">\u2191 PAGAS ' +
+                fmtEuro(diff) +
+                "/mes DE M\u00c1S (" +
+                fmtPct(pctExtra) +
+                ")</span>"
+              );
+            })();
       var lineaSel =
         chosenK === bestK
           ? "Coincide con la mejor tarifa."
-          : "<strong>Cálculo mostrado:</strong> " +
+          : "<strong>C\u00e1lculo mostrado:</strong> " +
             TARIFAS[chosenK].label +
             " &mdash; " +
             fmtEuro(chosenTotal) +
             "/mes. ";
       recomEl.innerHTML =
+        badge +
         lineaSel +
         "<span style=\"opacity:0.85\">Comparativa: T1 " +
         fmtEuro(totals["1"]) +
@@ -2035,6 +2111,7 @@
         ? "Si te dijeron que pagabas un " + fmtPct(num("compPct")) + ", el porcentaje real de ese d\u00eda es " + fmtPct(rp) + "."
         : "Introduce facturaci\u00f3n del d\u00eda para calcular el % real.";
 
+    updateTicketUmbralStatus(r.ticket, r.T, chosenK);
     updatePenalDojoUI(r.ticket, r.T, r.useMix, chosenK);
 
     document.getElementById("resultsBox").style.opacity = "1";
