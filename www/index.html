@@ -989,14 +989,14 @@
       </div>
       <div class="row" id="blockNacional">
         <label id="labelNacional">Mezcla d&eacute;bito / cr&eacute;dito (nacional)</label>
-        <input type="hidden" id="pctDebit" value="50" />
-        <input type="hidden" id="pctCredit" value="50" />
+        <input type="hidden" id="pctDebit" value="80" />
+        <input type="hidden" id="pctCredit" value="20" />
         <div id="wrapSliderDebit" class="slider-row is-hidden">
           <div class="slider-labels">
-            <span>D&eacute;bito <strong id="lblDebit">50</strong>%</span>
-            <span>Cr&eacute;dito <strong id="lblCredit">50</strong>%</span>
+            <span>D&eacute;bito <strong id="lblDebit">80</strong>%</span>
+            <span>Cr&eacute;dito <strong id="lblCredit">20</strong>%</span>
           </div>
-          <input type="range" id="sliderDebit" min="0" max="100" value="50" step="1" aria-label="Porcentaje debito" />
+          <input type="range" id="sliderDebit" min="0" max="100" value="80" step="1" aria-label="Porcentaje debito" />
           <p class="hint" style="margin-bottom:0">Mueve el control: la suma siempre es 100%.</p>
         </div>
         <div id="wrapMixtaHint" class="hint" style="margin-top:8px;margin-bottom:0">
@@ -1105,12 +1105,7 @@
       <div class="row">
         <label for="compAlquilerTerm">Alquiler terminal proveedor (EUR/ud, sin IVA)</label>
         <input type="number" id="compAlquilerTerm" min="0" step="0.5" value="5" />
-        <p class="hint">Lo que cobra tu competidor por cada terminal al mes.</p>
-      </div>
-      <div class="row">
-        <label for="compPenalFijo">Cargo fijo por operaci&oacute;n de la competencia (EUR)</label>
-        <input type="number" id="compPenalFijo" min="0" max="10" step="0.01" value="0.05" />
-        <p class="hint">El % de operaciones afectadas se toma del campo &laquo;% operaciones con m&iacute;nimo&raquo; de la secci&oacute;n Dojo. Con 0% no se aplica.</p>
+        <p class="hint">Lo que cobra tu competidor por cada terminal al mes. El % de operaciones con m&iacute;nimo se toma del campo Dojo.</p>
       </div>
         </div>
       </details>
@@ -1348,11 +1343,20 @@
     if (v > 100) return 100;
     return v;
   }
+  function pctPenalCompParaRate(ticket, rate, minFee) {
+    if (minFee <= 0 || rate <= 0) return 0;
+    if (ticket >= umbralMinimoTicket(rate, minFee) - 1e-9) return 0;
+    return clampPct(num("pctOpsPenalDojo")) / 100;
+  }
+
   function computeCompetenciaTotals(r) {
     var compPct = Math.max(0, num("compPct")) / 100;
     var compFijo = Math.max(0, num("compFijo"));
-    var compMin = Math.max(0, num("compPenalFijo"));
-    var pctPen = clampPct(num("pctOpsPenalDojo")) / 100;
+    var compMin = 0;
+    if (r.T && r.tarifaKey !== "3") {
+      compMin = refMinimoMixta(r.T).minF;
+    }
+    var pctPen = pctPenalCompParaRate(r.ticket, compPct, compMin);
     var compComision = r.n * feePerTxn(r.ticket, compPct, compMin, pctPen);
     var compAlquiler = Math.max(0, num("compAlquilerTerm")) * r.numTerminales;
     return {
@@ -1496,7 +1500,7 @@
     var alquilerSinIva = alquilerEx * numTerminales;
     var alquilerIva = alquilerSinIva * (1 + ivaPct / 100);
     var totalDojo = afterMin + alquilerSinIva;
-    var compTmp = { n: n, ticket: ticket, numTerminales: numTerminales };
+    var compTmp = { n: n, ticket: ticket, numTerminales: numTerminales, T: T, tarifaKey: tarifaKey };
     var comp = computeCompetenciaTotals(compTmp);
     var totalComp = comp.totalComp;
     var save = totalComp - totalDojo;
@@ -1516,7 +1520,6 @@
       compComision: comp.compComision,
       compAlquiler: comp.compAlquiler,
       compFijo: comp.compFijo,
-      compPenalFijo: comp.compMin,
       save: save,
       savePrint: save,
       nat: nat,
@@ -1680,7 +1683,14 @@
       slide.classList.remove("is-hidden");
       hintM.classList.add("is-hidden");
       if (lab) lab.textContent = "Mezcla d\u00e9bito / cr\u00e9dito (nacional)";
-      syncSliderFromHidden();
+      document.getElementById("pctDebit").value = "80";
+      document.getElementById("pctCredit").value = "20";
+      var s = document.getElementById("sliderDebit");
+      if (s) s.value = "80";
+      var ld = document.getElementById("lblDebit");
+      var lc = document.getElementById("lblCredit");
+      if (ld) ld.textContent = "80";
+      if (lc) lc.textContent = "20";
     }
   }
 
@@ -2024,13 +2034,6 @@
         : "") +
       (r.compFijo > 0
         ? "<span>Competencia otros fijos</span><span>" + fmtEuro(r.compFijo) + "</span>"
-        : "") +
-      (r.compPenalFijo > 0
-        ? "<span>Competencia cargo fijo/op.</span><span>" +
-          fmtEuro(r.compPenalFijo) +
-          " (" +
-          Math.round(clampPct(num("pctOpsPenalDojo"))) +
-          "% op.)</span>"
         : "");
     kv.innerHTML =
       "<span>Operaciones / mes (aprox.)</span><span>" + (Math.round(r.n * 10) / 10).toLocaleString("es-ES") + "</span>" +
@@ -2074,7 +2077,7 @@
     document.getElementById("resultsBox").style.opacity = "1";
   }
 
-  ["cto", "ticket", "pctBiz", "pctEu", "pctNonEu", "compPct", "compFijo", "compAlquilerTerm", "compPenalFijo", "pctOpsPenalDojo", "tarifa", "dayVol", "dayFee", "numTerminales", "nombreCliente", "nombrePc", "telefonoPc"].forEach(function (id) {
+  ["cto", "ticket", "pctBiz", "pctEu", "pctNonEu", "compPct", "compFijo", "compAlquilerTerm", "pctOpsPenalDojo", "tarifa", "dayVol", "dayFee", "numTerminales", "nombreCliente", "nombrePc", "telefonoPc"].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.addEventListener("input", render);
     if (el) el.addEventListener("change", render);
