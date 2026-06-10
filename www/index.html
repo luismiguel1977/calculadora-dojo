@@ -213,12 +213,6 @@
     }
     .tarifa-badge-best { background: #1a8a3a; }
     .tarifa-badge-worse { background: #c0392b; }
-    .ticket-umbral {
-      margin: 6px 0 0;
-      font-size: 0.78rem;
-      line-height: 1.4;
-      font-weight: 500;
-    }
     .fixed-vals {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -988,7 +982,6 @@
         <div class="row">
           <label for="ticket">Ticket medio (EUR)</label>
           <input type="number" id="ticket" min="0.01" step="0.5" value="15" inputmode="decimal" />
-          <p class="ticket-umbral" id="ticketUmbralStatus" aria-live="polite"></p>
         </div>
       </div>
       <div class="row">
@@ -1619,43 +1612,6 @@
     if (lbl) lbl.textContent = String(Math.round(clampPct(num("pctOpsPenalDojo"))));
   }
 
-  function updateTicketUmbralStatus(ticket, T, tarifaKey) {
-    var el = document.getElementById("ticketUmbralStatus");
-    if (!el) return;
-    if (tarifaKey === "3") {
-      el.textContent = "Tarifa 3: sin m\u00ednimo por operaci\u00f3n.";
-      el.style.color = "#1a8a3a";
-      return;
-    }
-    var ref = refMinimoMixta(T);
-    var minF = ref.minF;
-    var rate = ref.rate;
-    if (minF <= 0 || rate <= 0) {
-      el.textContent = "Sin m\u00ednimo por operaci\u00f3n en esta tarifa.";
-      el.style.color = "#1a8a3a";
-      return;
-    }
-    var um = umbralMinimoTicket(rate, minF);
-    var umShow = Math.round(um * 100) / 100;
-    if (ticket >= um - 1e-9) {
-      el.innerHTML =
-        "Umbral m\u00ednimo: <strong>" +
-        fmtEuro(umShow) +
-        "</strong> \u2014 tu ticket (" +
-        fmtEuro(ticket) +
-        ") est\u00e1 <strong>por encima</strong>: el m\u00ednimo por operaci\u00f3n no aplica.";
-      el.style.color = "#1a8a3a";
-    } else {
-      el.innerHTML =
-        "Umbral m\u00ednimo: <strong>" +
-        fmtEuro(umShow) +
-        "</strong> \u2014 tu ticket (" +
-        fmtEuro(ticket) +
-        ") est\u00e1 <strong>por debajo</strong>: puede aplicar el m\u00ednimo.";
-      el.style.color = "#c0392b";
-    }
-  }
-
   function updatePenalDojoUI(ticket, T, useMix, tarifaKey) {
     var box = document.getElementById("penalDojoBox");
     var inp = document.getElementById("pctOpsPenalDojo");
@@ -1669,41 +1625,43 @@
       inp.disabled = true;
       inp.value = "0";
       st.innerHTML = "<strong>Tarifa 3:</strong> sin m\u00ednimo por operaci\u00f3n.";
+      syncPenalSliderLabel();
       return;
     }
+    inp.disabled = false;
+    box.classList.remove("is-disabled");
+    if (inp.value === "0" || inp.value === "") inp.value = "40";
     var um = umbralMinimoTicket(rate, minF);
     var umShow = Math.round(um * 100) / 100;
     var modo = useMix ? "mixta" : "nacional (referencia mixta)";
     if (ticket >= um - 1e-9) {
-      inp.value = "0";
-      inp.disabled = true;
-      box.classList.add("is-disabled");
       st.innerHTML =
         "<strong>" +
         T.label +
         "</strong> (" +
         modo +
-        "): con ticket medio <strong>" +
+        "): umbral <strong>" +
+        fmtEuro(umShow) +
+        "</strong> \u2014 con ticket <strong>" +
         fmtEuro(ticket) +
-        "</strong> (&ge; " +
-        fmtEuro(umShow) +
-        ") el m\u00ednimo de " +
+        "</strong> el m\u00edn. de " +
         fmtEuro(minF) +
-        " <strong>no aplica</strong>.";
+        " <strong>no entra en el c\u00e1lculo</strong>. El % queda a 40% por si baja el ticket.";
     } else {
-      inp.disabled = false;
-      box.classList.remove("is-disabled");
-      if (inp.value === "0" || inp.value === "") inp.value = "40";
       st.innerHTML =
         "<strong>" +
         T.label +
         "</strong> (" +
         modo +
-        "): m\u00ednimo " +
-        fmtEuro(minF) +
-        " por operaci\u00f3n si el ticket &lt; <strong>" +
+        "): umbral <strong>" +
         fmtEuro(umShow) +
-        "</strong>. Indica el % de operaciones que lo pagan.";
+        "</strong> \u2014 ticket <strong>" +
+        fmtEuro(ticket) +
+        "</strong> por debajo: puede aplicar m\u00edn. " +
+        fmtEuro(minF) +
+        "/op. en el <strong>" +
+        Math.round(clampPct(num("pctOpsPenalDojo"))) +
+        "%</strong> de operaciones.";
     }
     syncPenalSliderLabel();
   }
@@ -2111,7 +2069,6 @@
         ? "Si te dijeron que pagabas un " + fmtPct(num("compPct")) + ", el porcentaje real de ese d\u00eda es " + fmtPct(rp) + "."
         : "Introduce facturaci\u00f3n del d\u00eda para calcular el % real.";
 
-    updateTicketUmbralStatus(r.ticket, r.T, chosenK);
     updatePenalDojoUI(r.ticket, r.T, r.useMix, chosenK);
 
     document.getElementById("resultsBox").style.opacity = "1";
