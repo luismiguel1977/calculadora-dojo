@@ -4,7 +4,7 @@
   "private": true,
   "description": "Calculadora comercial Dojo (web + Android Capacitor)",
   "scripts": {
-    "sync:web": "node -e \"require('fs').copyFileSync('www/index.html','dojo-v2.1.html')\""
+    "sync:web": "node -e \"const fs=require('fs'); fs.copyFileSync('www/index.html','dojo-v2.1.html'); fs.copyFileSync('sw.js','www/sw.js'); fs.copyFileSync('manifest.webmanifest','www/manifest.webmanifest')\""
   },
   "capacitor": {
     "note": "Fuente web en www/ — coincide con el APK empaquetado"

@@ -1,12 +1,67 @@
 # Reempaqueta y firma el APK (v2) con los cambios de www/index.html
+# v2.1: autodetección de JDK (javac en PATH) y Android SDK (ANDROID_HOME / ANDROID_SDK_ROOT / ~/Android/Sdk)
 $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot -Parent
 
-$bt = Get-ChildItem "$env:LOCALAPPDATA\Android\Sdk\build-tools" | Sort-Object Name -Descending | Select-Object -First 1
-$zipalign = Join-Path $bt.FullName "zipalign.exe"
-$apksigner = Join-Path $bt.FullName "apksigner.bat"
-$jdk = "C:\Program Files\Java\jdk-25.0.2\bin"
+# --- Autodetección de JDK ---
+$javac = (Get-Command javac -ErrorAction SilentlyContinue).Source
+if (-not $javac) {
+  Write-Error "javac no encontrado. Instala JDK 17+ y asegurate de que este en PATH."
+  exit 1
+}
+$jdk = Split-Path -Parent (Split-Path -Parent $javac)
+if (-not (Test-Path (Join-Path $jdk "bin\keytool.exe"))) {
+  Write-Error "keytool.exe no encontrado en $jdk\bin. Verifica que el JDK este completo."
+  exit 1
+}
+Write-Host "JDK: $jdk"
 
+# --- Autodetección de Android SDK ---
+$sdk = $null
+if ($env:ANDROID_HOME)        { $sdk = $env:ANDROID_HOME }
+elseif ($env:ANDROID_SDK_ROOT) { $sdk = $env:ANDROID_SDK_ROOT }
+elseif ($env:LOCALAPPDATA)     { $sdk = Join-Path $env:LOCALAPPDATA "Android\Sdk" }
+elseif ($env:ANDROID_SDK_HOME) { $sdk = $env:ANDROID_SDK_HOME }
+elseif ($env:HOME)             { $sdk = Join-Path $env:HOME "Android/Sdk" }
+
+if (-not $sdk) {
+  Write-Error "Android SDK no encontrado. Define ANDROID_HOME, ANDROID_SDK_ROOT o instala el SDK en ~/Android/Sdk."
+  exit 1
+}
+if (-not (Test-Path $sdk)) {
+  Write-Error "Android SDK no existe en: $sdk"
+  exit 1
+}
+Write-Host "Android SDK: $sdk"
+
+# --- Autodetección de build-tools (última versión disponible) ---
+$btDir = Join-Path $sdk "build-tools"
+if (-not (Test-Path $btDir)) {
+  Write-Error "No se encontro la carpeta build-tools en: $btDir"
+  exit 1
+}
+$bt = Get-ChildItem $btDir -ErrorAction SilentlyContinue | Sort-Object Name -Descending | Select-Object -First 1
+if (-not $bt) {
+  Write-Error "No se encontraron build-tools en $btDir. Instala al menos una version con el SDK Manager."
+  exit 1
+}
+Write-Host "Build-tools: $($bt.FullName)"
+
+$zipalign  = Join-Path $bt.FullName "zipalign.exe"
+$apksigner = Join-Path $bt.FullName "apksigner.bat"
+$aapt2     = Join-Path $bt.FullName "aapt2.exe"
+
+foreach ($tool in @($zipalign, $apksigner, $aapt2)) {
+  if (-not (Test-Path $tool)) {
+    Write-Error "Herramienta SDK no encontrada: $tool. Instala build-tools completo."
+    exit 1
+  }
+}
+Write-Host "  zipalign:  $zipalign"
+Write-Host "  apksigner: $apksigner"
+Write-Host "  aapt2:     $aapt2"
+
+# --- Localizar APK base ---
 $candidates = @(
   (Join-Path $root "build-apk\app.zip"),
   (Join-Path $root "build-apk\base.apk"),
@@ -18,6 +73,7 @@ foreach ($c in $candidates) {
 }
 if (-not $baseApk) { throw "No hay APK base valido (ZIP). Restaura build-apk/app.zip o x1kk4c.apk original." }
 Write-Host "Base: $baseApk"
+
 $html = Join-Path $root "www\index.html"
 $outApk = Join-Path $root "apk\calculadora-dojo.apk"
 $workDir = Join-Path $root "build-apk"
