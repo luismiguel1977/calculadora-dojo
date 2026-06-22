@@ -4,7 +4,7 @@
   "private": true,
   "description": "Calculadora comercial Dojo (web + Android Capacitor)",
   "scripts": {
-    "sync:web": "node -e \"const fs=require('fs'); fs.copyFileSync('dojo-v2.1.html','www/index.html'); fs.copyFileSync('sw.js','www/sw.js'); fs.copyFileSync('manifest.webmanifest','www/manifest.webmanifest')\""
+    "sync:web": "node -e \"const fs=require('fs'); const path=require('path'); const src='dojo-v2.1.html', dst='www/index.html'; fs.copyFileSync(src, dst); console.log('synced', src, '→', dst);\" && node -e \"const fs=require('fs'); const path=require('path'); const crypto=require('crypto'); function hash(p){return crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');} const files=[{src:'sw.js',dst:'www/sw.js'},{src:'manifest.webmanifest',dst:'www/manifest.webmanifest'},{src:'icons/icon-180.png',dst:'www/icons/icon-180.png'},{src:'icons/icon-192.png',dst:'www/icons/icon-192.png'},{src:'icons/icon-512.png',dst:'www/icons/icon-512.png'},{src:'icons/icon.svg',dst:'www/icons/icon.svg'},{src:'assets/dojo-logo-header.png',dst:'www/assets/dojo-logo-header.png'}]; for (const f of files) { if (!fs.existsSync(f.src)) { console.warn('  skip (no source):', f.src); continue; } fs.mkdirSync(path.dirname(f.dst), {recursive: true}); const h1 = fs.existsSync(f.dst) ? hash(f.dst) : ''; const h2 = hash(f.src); if (h1 !== h2) { fs.copyFileSync(f.src, f.dst); console.log('  copied', f.src, '→', f.dst); } else { console.log('  unchanged', f.dst); } }\""
   },
   "capacitor": {
     "note": "Fuente web en www/ — coincide con el APK empaquetado"
