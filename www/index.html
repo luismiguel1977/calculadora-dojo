@@ -1107,7 +1107,7 @@
       </div>
       <div class="penal-box" id="penalDojoBox">
         <label for="pctOpsPenalDojo">% operaciones con m&iacute;nimo por operaci&oacute;n (Dojo): <strong id="lblPenal">40</strong>%</label>
-        <input type="range" id="pctOpsPenalDojo" min="0" max="100" step="5" value="40" aria-label="Porcentaje operaciones con minimo Dojo" inputmode="decimal" />
+        <input type="range" id="pctOpsPenalDojo" min="0" max="100" step="1" value="40" aria-label="Porcentaje operaciones con minimo Dojo" inputmode="decimal" />
         <p class="penal-status" id="penalDojoStatus" aria-live="polite"></p>
       </div>
     </section>
@@ -1709,7 +1709,7 @@
     }
     inp.disabled = false;
     box.classList.remove("is-disabled");
-    if (inp.value === "0" || inp.value === "") inp.value = "40";
+    if (inp.value === "") inp.value = "40";
     var um = umbralMinimoTicket(rate, minF);
     var umShow = Math.round(um * 100) / 100;
     var modo = useMix ? "mixta" : "nacional (referencia mixta)";
