@@ -375,6 +375,20 @@
     .advanced-cards-inner { padding-bottom: 8px; }
     .is-hidden { display: none !important; }
     .is-disabled { opacity: 0.45; pointer-events: none; }
+    .warn-box {
+      display: block;
+      margin: 10px 0 4px;
+      padding: 10px 12px;
+      background: #fff4e5;
+      color: #8a4b00;
+      border: 1px solid #ffb84d;
+      border-left: 4px solid #ff8800;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .warn-box[hidden] { display: none; }
     .btn-print {
       display: block;
       width: 100%;
@@ -391,6 +405,26 @@
     }
     .btn-print:hover { background: var(--dojo-green-soft); }
     .btn-print:active { transform: scale(0.98); }
+    .btn-print-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .btn-print-row .btn-print {
+      width: auto;
+      flex: 1 1 auto;
+      margin-top: 0;
+    }
+    .btn-print-secondary {
+      background: var(--dojo-bg);
+      color: var(--dojo-green);
+      border: 1px solid var(--dojo-green);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 10px 12px;
+    }
+    .btn-print-secondary:hover { background: var(--dojo-green-soft); color: var(--dojo-bg); }
     .btn-download {
       display: block;
       width: 100%;
@@ -477,6 +511,7 @@
     body.dojo-print-mode .prop-header-logo { height: 14mm; max-width: 55mm; }
     body.dojo-print-mode .prop-meta-title { font-size: 20pt; }
     body.dojo-print-mode .prop-meta-date { font-size: 9.5pt; }
+    body.dojo-print-mode .prop-meta-validez { font-size: 8.5pt; }
     body.dojo-print-mode .prop-rule { margin: 0 0 5mm; }
     body.dojo-print-mode .prop-client-row { margin-bottom: 6mm; }
     body.dojo-print-mode .prop-client-name { font-size: 22pt; }
@@ -558,6 +593,15 @@
       font-weight: 400;
       letter-spacing: 0;
       color: #7d7d7d;
+      text-transform: none;
+    }
+    .prop-meta-validez {
+      margin: 1mm 0 0;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 9pt;
+      font-weight: 600;
+      letter-spacing: 0;
+      color: #003f33;
       text-transform: none;
     }
     .prop-rule {
@@ -915,6 +959,7 @@
       }
       .prop-meta-title { font-size: 19pt; }
       .prop-meta-date { font-size: 9pt; }
+      .prop-meta-validez { font-size: 8pt; }
       .prop-rule { margin: 0 0 5mm; }
       .prop-client-row { margin-bottom: 6mm; }
       .prop-client-name { font-size: 22pt; }
@@ -968,7 +1013,7 @@
       <h2>Perfil del comercio</h2>
       <div class="row">
         <label for="nombreCliente">Nombre del comercio / cliente</label>
-        <input type="text" id="nombreCliente" placeholder="Ej. Bar Manolo" autocomplete="organization" />
+        <input type="text" id="nombreCliente" placeholder="Ej. Bar Manolo" autocomplete="organization" maxlength="80" />
       </div>
       <div class="row">
         <label for="numTerminales">N&uacute;mero de terminales</label>
@@ -1009,18 +1054,19 @@
           <div class="grid-2">
             <div class="row">
               <label for="pctBiz">% Volumen empresa / business</label>
-              <input type="number" id="pctBiz" min="0" max="100" value="0" step="1" />
+              <input type="number" id="pctBiz" min="0" max="100" value="0" step="1" inputmode="decimal" />
             </div>
             <div class="row">
               <label for="pctEu">% Tarjeta UE no nacional</label>
-              <input type="number" id="pctEu" min="0" max="100" value="0" />
+              <input type="number" id="pctEu" min="0" max="100" value="0" inputmode="decimal" />
             </div>
           </div>
           <div class="row">
             <label for="pctNonEu">% Tarjeta fuera de UE</label>
-            <input type="number" id="pctNonEu" min="0" max="100" value="0" />
+            <input type="number" id="pctNonEu" min="0" max="100" value="0" inputmode="decimal" />
           </div>
           <p class="hint" style="margin-top:0">El resto del volumen se trata como nacional. La suma no debe superar 100%.</p>
+          <p class="warn-box" id="sumSpecWarn" role="alert" hidden>⚠ La suma de los tipos de tarjeta supera 100%. Revisa los valores.</p>
         </div>
       </details>
       <div class="row">
@@ -1042,7 +1088,7 @@
         <select id="tarifa">
           <option value="1">Tarifa 1 &mdash; Estándar</option>
           <option value="2">Tarifa 2</option>
-          <option value="3">Tarifa 3 (sin mínimos)</option>
+          <option value="3">Tarifa 3 (sin mínimo por operación)</option>
         </select>
       </div>
       <p class="recom-tarifa" id="recomTarifaText" aria-live="polite"></p>
@@ -1061,7 +1107,7 @@
       </div>
       <div class="penal-box" id="penalDojoBox">
         <label for="pctOpsPenalDojo">% operaciones con m&iacute;nimo por operaci&oacute;n (Dojo): <strong id="lblPenal">40</strong>%</label>
-        <input type="range" id="pctOpsPenalDojo" min="0" max="100" step="5" value="40" aria-label="Porcentaje operaciones con minimo Dojo" />
+        <input type="range" id="pctOpsPenalDojo" min="0" max="100" step="1" value="40" aria-label="Porcentaje operaciones con minimo Dojo" inputmode="decimal" />
         <p class="penal-status" id="penalDojoStatus" aria-live="polite"></p>
       </div>
     </section>
@@ -1075,15 +1121,15 @@
       <div class="grid-2">
         <div class="row">
           <label for="dayVol">Facturaci&oacute;n d&iacute;a tarjeta (EUR)</label>
-          <input type="number" id="dayVol" min="0" step="10" value="500" />
+          <input type="number" id="dayVol" min="0" step="10" value="500" inputmode="decimal" />
         </div>
         <div class="row">
           <label for="dayFee">Comisiones cobradas ese d&iacute;a (EUR)</label>
-          <input type="number" id="dayFee" min="0" step="0.1" value="3.5" />
+          <input type="number" id="dayFee" min="0" step="0.1" value="3.5" inputmode="decimal" />
         </div>
       </div>
       <p><strong id="realPct">--</strong></p>
-      <p class="hint" id="realPitch">
+      <p class="hint" id="realPitch"></p>
         </div>
       </details>
     </section>
@@ -1095,16 +1141,16 @@
         <div class="advanced-cards-inner">
 <div class="row">
         <label for="compPct">% Real que le cobran</label>
-        <input type="number" id="compPct" min="0" max="20" step="0.01" value="0.7" />
+        <input type="number" id="compPct" min="0" max="20" step="0.01" value="0.7" inputmode="decimal" />
         <p class="hint">Usa el ejercicio del &laquo;% real&raquo; abajo si solo sabe facturaci&oacute;n y comisi&oacute;n del d&iacute;a.</p>
       </div>
       <div class="row">
         <label for="compFijo">Otros costes fijos competidor / mes (EUR)</label>
-        <input type="number" id="compFijo" min="0" step="1" value="0" />
+        <input type="number" id="compFijo" min="0" step="1" value="0" inputmode="decimal" />
       </div>
       <div class="row">
         <label for="compAlquilerTerm">Alquiler terminal proveedor (EUR/ud, sin IVA)</label>
-        <input type="number" id="compAlquilerTerm" min="0" step="0.5" value="5" />
+        <input type="number" id="compAlquilerTerm" min="0" step="0.5" value="5" inputmode="decimal" />
         <p class="hint">Lo que cobra tu competidor por cada terminal al mes. El % de operaciones con m&iacute;nimo se toma del campo Dojo.</p>
       </div>
         </div>
@@ -1126,16 +1172,21 @@
       <div class="grid-2">
         <div class="row">
           <label for="nombrePc">Nombre del PC</label>
-          <input type="text" id="nombrePc" placeholder="Ej. Mar&iacute;a Garc&iacute;a" autocomplete="name" />
+          <input type="text" id="nombrePc" placeholder="Ej. Mar&iacute;a Garc&iacute;a" autocomplete="name" maxlength="50" />
         </div>
         <div class="row">
           <label for="telefonoPc">Tel&eacute;fono del PC</label>
-          <input type="tel" id="telefonoPc" placeholder="Ej. 600 123 456" autocomplete="tel" inputmode="tel" />
+          <input type="tel" id="telefonoPc" placeholder="Ej. 600 123 456" autocomplete="tel" inputmode="tel" maxlength="20" />
         </div>
       </div>
     </section>
 
-    <button type="button" class="btn-print" id="btnImprimirPropuesta">Imprimir propuesta</button>
+    <div class="btn-print-row">
+      <button type="button" class="btn-print" id="btnImprimirPropuesta">Imprimir propuesta</button>
+      <button type="button" class="btn-print btn-print-secondary" id="btnEmailPropuesta">📧 Enviar email</button>
+      <button type="button" class="btn-print btn-print-secondary" id="btnCompartirPropuesta">📱 Compartir</button>
+      <button type="button" class="btn-print btn-print-secondary" id="btnPdfPropuesta">💾 Guardar PDF</button>
+    </div>
 
     <section class="card" id="apkDownloadCard">
       <h2>App Android</h2>
@@ -1158,6 +1209,7 @@
         <p class="prop-meta-title">Propuesta</p>
         <div class="prop-meta-right">
           <p class="prop-meta-date" id="printFecha">--</p>
+          <p class="prop-meta-validez" id="printValidez">--</p>
         </div>
       </div>
       <hr class="prop-rule" />
@@ -1278,9 +1330,16 @@
       credit: { r: 0.0039, m: 0.05 },
       mix: { r: 0.0035, m: 0.05 },
       extraBiz: 0.022,
+      // ⚠️ DOC dice 0,7% (memory/topics/dojo-operativa.md, sección "Extras
+      // importantes": "Tarjetas europeas no domésticas: +0,70%"), código
+      // tiene 0,5% (0.005) — verificar con DOJO si es 0,5% o 0,7%.
       extraEu: 0.005,
       extraNonEu: 0.015,
       extraNonEuFix: 0.13,
+      // ⚠️ Verificar con DOJO: ¿integRate 0,10% (0.001) = pagos remotos
+      // 0,70% de la doc? Y faltan contracargos (28€) y devoluciones (0,50€)
+      // en la propuesta. La doc oficial menciona "Pagos remotos (tpv
+      // virtual): +0,70%", "Devolución: 0,50€", "Contracargo: 28€ + IVA".
       integRate: 0.001
     },
     "2": {
@@ -1289,9 +1348,16 @@
       credit: { r: 0.0049, m: 0.03 },
       mix: { r: 0.0045, m: 0.03 },
       extraBiz: 0.022,
+      // ⚠️ DOC dice 0,7% (memory/topics/dojo-operativa.md, sección "Extras
+      // importantes": "Tarjetas europeas no domésticas: +0,70%"), código
+      // tiene 0,5% (0.005) — verificar con DOJO si es 0,5% o 0,7%.
       extraEu: 0.005,
       extraNonEu: 0.015,
       extraNonEuFix: 0.13,
+      // ⚠️ Verificar con DOJO: ¿integRate 0,10% (0.001) = pagos remotos
+      // 0,70% de la doc? Y faltan contracargos (28€) y devoluciones (0,50€)
+      // en la propuesta. La doc oficial menciona "Pagos remotos (tpv
+      // virtual): +0,70%", "Devolución: 0,50€", "Contracargo: 28€ + IVA".
       integRate: 0.001
     },
     "3": {
@@ -1300,9 +1366,16 @@
       credit: { r: 0.0059, m: 0 },
       mix: { r: 0.0055, m: 0 },
       extraBiz: 0.022,
+      // ⚠️ DOC dice 0,7% (memory/topics/dojo-operativa.md, sección "Extras
+      // importantes": "Tarjetas europeas no domésticas: +0,70%"), código
+      // tiene 0,5% (0.005) — verificar con DOJO si es 0,5% o 0,7%.
       extraEu: 0.005,
       extraNonEu: 0.015,
       extraNonEuFix: 0.13,
+      // ⚠️ Verificar con DOJO: ¿integRate 0,10% (0.001) = pagos remotos
+      // 0,70% de la doc? Y faltan contracargos (28€) y devoluciones (0,50€)
+      // en la propuesta. La doc oficial menciona "Pagos remotos (tpv
+      // virtual): +0,70%", "Devolución: 0,50€", "Contracargo: 28€ + IVA".
       integRate: 0.001
     }
   };
@@ -1352,10 +1425,13 @@
   function computeCompetenciaTotals(r) {
     var compPct = Math.max(0, num("compPct")) / 100;
     var compFijo = Math.max(0, num("compFijo"));
+    // ⚠️ FIX BUG #2 (auditoría 2026-06-17): compMin = 0 SIEMPRE.
+    // Los competidores reales (BBVA, CaixaBank, Getnet, Sabadell, etc.) usan
+    // cuota fija mensual, ya recogida en `compFijo`, no tienen mínimo por op.
+    // Antes se tomaba de la tarifa Dojo mostrada, lo que sesgaba el cálculo
+    // de la competencia según T1/T2/T3 (mismo cliente, distinto coste por
+    // cambiar de tarifa en la app).
     var compMin = 0;
-    if (r.T && r.tarifaKey !== "3") {
-      compMin = refMinimoMixta(r.T).minF;
-    }
     var pctPen = pctPenalCompParaRate(r.ticket, compPct, compMin);
     var compComision = r.n * feePerTxn(r.ticket, compPct, compMin, pctPen);
     var compAlquiler = Math.max(0, num("compAlquilerTerm")) * r.numTerminales;
@@ -1627,13 +1703,13 @@
       box.classList.add("is-disabled");
       inp.disabled = true;
       inp.value = "0";
-      st.innerHTML = "<strong>Tarifa 3:</strong> sin m\u00ednimo por operaci\u00f3n.";
+      st.innerHTML = "<strong>Tarifa 3:</strong> cobra solo el % sobre ventas. No hay m\u00ednimo por operaci\u00f3n, pero la cuota m\u00ednima mensual de 24,95\u202f\u20ac se aplica si las comisiones no la superan.";
       syncPenalSliderLabel();
       return;
     }
     inp.disabled = false;
     box.classList.remove("is-disabled");
-    if (inp.value === "0" || inp.value === "") inp.value = "40";
+    if (inp.value === "") inp.value = "40";
     var um = umbralMinimoTicket(rate, minF);
     var umShow = Math.round(um * 100) / 100;
     var modo = useMix ? "mixta" : "nacional (referencia mixta)";
@@ -1727,6 +1803,17 @@
     return "PRO-" + y + "-" + m + day;
   }
 
+  function pad2(n) { return String(n).padStart(2, "0"); }
+
+  function fechaEsCorta(d) {
+    return pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + "/" + d.getFullYear();
+  }
+
+  function fechaValidezEs(d, dias) {
+    var v = new Date(d.getFullYear(), d.getMonth(), d.getDate() + (dias || 30));
+    return fechaEsCorta(v);
+  }
+
   function nombreArchivoPropuesta(nombreComercio) {
     var limpio = (nombreComercio || "Cliente")
       .normalize("NFD")
@@ -1763,7 +1850,10 @@
   function fillPropuestaPrint(r) {
     var now = new Date();
     var nombre = textVal("nombreCliente") || "Cliente";
-    var ops = Math.round(r.n);
+    // ⚠️ FIX BUG #9 (auditoría 2026-06-17): unificar con la app.
+    // Antes: Math.round(r.n) → 545 ops. App: Math.round(r.n * 10) / 10 → 545,5 ops.
+    // Mismo número de operaciones en print y app (1 decimal, formato es-ES).
+    var ops = Math.round(r.n * 10) / 10;
     var compPctVal = num("compPct");
     var useMix = r.useMix;
     var tarifaLbl = r.T.label;
@@ -1775,6 +1865,7 @@
     setPrintText("printFecha", mesAnioEs(now).toUpperCase());
     setPrintText("printNombreCliente", nombre);
     setPrintText("printRef", refPropuesta(now));
+    setPrintText("printValidez", "V\u00e1lido hasta: " + fechaValidezEs(now, 30));
     fillPrintPc();
     setPrintText("printFacturacion", fmtEuroPrint(r.cto));
     setPrintText(
@@ -1936,6 +2027,99 @@
     });
   }
 
+  function buildEmailBody() {
+    var r = computeWithTarifaKey(getChosenTarifaKey());
+    var p = computePrintComparativa(r);
+    var nombreComercio = textVal("nombreCliente") || "Cliente";
+    var nombrePc = textVal("nombrePc");
+    var telPc = textVal("telefonoPc");
+    var tarifa = TARIFAS[getChosenTarifaKey()].label;
+    var contacto = [];
+    if (nombrePc) contacto.push(nombrePc);
+    if (telPc) contacto.push(telPc);
+    var contactoStr = contacto.length ? contacto.join(" \u00b7 ") : "(tu contacto)";
+    var ahorroMes = r.save;
+    var ahorroAnio = r.save * 12;
+    return [
+      "Hola " + nombreComercio + ",",
+      "",
+      "Te adjunto la propuesta personalizada de DOJO con los datos que hemos revisado:",
+      "",
+      "- Tarifa propuesta: " + tarifa,
+      "- Coste mensual estimado Dojo: " + fmtEuro(p.totalDojoPrint),
+      "- Coste mensual competencia: " + fmtEuro(p.totalCompPrint),
+      "- Ahorro mensual: " + fmtEuro(ahorroMes),
+      "- Ahorro anual estimado: " + fmtEuro(ahorroAnio),
+      "",
+      "La propuesta detallada (PDF) la imprimimos / exportamos en la app. Si quieres, te la env\u00edo adjunta por otro canal.",
+      "",
+      "Cualquier duda, escr\u00edbeme.",
+      "",
+      contactoStr,
+      "Equipo DOJO"
+    ].join("\n");
+  }
+
+  function onEmailPropuesta() {
+    var nombreComercio = textVal("nombreCliente") || "Cliente";
+    var subject = "Propuesta DOJO \u2014 " + nombreComercio;
+    var body = buildEmailBody();
+    var href = "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    // En web abre el cliente de correo; en Android nativo (Capacitor) usamos window.open como fallback
+    try {
+      window.location.href = href;
+    } catch (e) {
+      window.open(href, "_blank");
+    }
+  }
+
+  function onCompartirPropuesta() {
+    var r = computeWithTarifaKey(getChosenTarifaKey());
+    var nombreComercio = textVal("nombreCliente") || "Cliente";
+    var tarifa = TARIFAS[getChosenTarifaKey()].label;
+    var title = "Propuesta DOJO \u2014 " + nombreComercio;
+    var text =
+      "Propuesta DOJO para " + nombreComercio + "\n" +
+      "Tarifa " + tarifa + " \u00b7 Coste mensual " + fmtEuro(r.totalDojo) +
+      " \u00b7 Ahorro anual " + fmtEuro(r.save * 12) +
+      "\n\n(Generado desde la calculadora DOJO)";
+    var url = (typeof window !== "undefined" && window.location) ? window.location.href : "";
+    if (navigator && typeof navigator.share === "function") {
+      try {
+        navigator.share({ title: title, text: text, url: url }).catch(function () {});
+        return;
+      } catch (e) {
+        // seguir al fallback
+      }
+    }
+    // Fallback: mailto con el mismo cuerpo
+    var subject = title;
+    var href = "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(text);
+    try { window.location.href = href; } catch (e) { window.open(href, "_blank"); }
+  }
+
+  function onPdfPropuesta() {
+    var r = computeWithTarifaKey(getChosenTarifaKey());
+    var nombreComercio = textVal("nombreCliente") || "Cliente";
+    var tituloArchivo = nombreArchivoPropuesta(nombreComercio);
+    fillPropuestaPrint(r);
+    enterPrintMode(tituloArchivo);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        forzarReflowImpresion();
+        setTimeout(function () {
+          forzarReflowImpresion();
+          // En el di\u00e1logo de impresi\u00f3n el usuario elige "Guardar como PDF"
+          if (window.AndroidPrint) {
+            window.AndroidPrint.print();
+          } else {
+            window.print();
+          }
+        }, 500);
+      });
+    });
+  }
+
   function render() {
     var keys = ["1", "2", "3"];
     var totals = {};
@@ -2011,7 +2195,11 @@
         TARIFAS[others[0]].label + ": " + fmtEuro(totals[others[0]]) + " · " +
         TARIFAS[others[1]].label + ": " + fmtEuro(totals[others[1]]) +
         "<br>Ahorro anual estimado: <strong style=\"color:#66ff99\">" +
-        fmtEuro(computeWithTarifaKey(chosenK).save * 12) + "</strong>";
+        // ⚠️ FIX BUG #3 (auditoría 2026-06-17): usar `bestK` (la más barata),
+        // no `chosenK` (la que el usuario eligió manualmente). El hero ya
+        // muestra "Tarifa X: la más barata", así que el ahorro debe ser
+        // coherente con esa afirmación.
+        fmtEuro(computeWithTarifaKey(bestK).save * 12) + "</strong>";
     }
 
     document.getElementById("totalDojo").textContent = fmtEuro(r.totalDojo);
@@ -2074,6 +2262,23 @@
 
     updatePenalDojoUI(r.ticket, r.T, r.useMix, chosenK);
 
+    // Aviso si la suma de los % de tipos de tarjeta supera 100%
+    var sumSpecWarn = document.getElementById("sumSpecWarn");
+    if (sumSpecWarn) {
+      var pctB = Math.max(0, num("pctBiz"));
+      var pctE = Math.max(0, num("pctEu"));
+      var pctN = Math.max(0, num("pctNonEu"));
+      var suma = pctB + pctE + pctN;
+      if (suma > 100.0001) {
+        sumSpecWarn.textContent = "⚠ La suma de los tipos de tarjeta es " +
+          suma.toLocaleString("es-ES", { maximumFractionDigits: 1 }) +
+          "% y supera 100%. Revisa los valores.";
+        sumSpecWarn.hidden = false;
+      } else {
+        sumSpecWarn.hidden = true;
+      }
+    }
+
     document.getElementById("resultsBox").style.opacity = "1";
   }
 
@@ -2094,6 +2299,12 @@
   if (sd) sd.addEventListener("input", onSliderDebit);
   var btnPrint = document.getElementById("btnImprimirPropuesta");
   if (btnPrint) btnPrint.addEventListener("click", onImprimirPropuesta);
+  var btnEmail = document.getElementById("btnEmailPropuesta");
+  if (btnEmail) btnEmail.addEventListener("click", onEmailPropuesta);
+  var btnShare = document.getElementById("btnCompartirPropuesta");
+  if (btnShare) btnShare.addEventListener("click", onCompartirPropuesta);
+  var btnPdf = document.getElementById("btnPdfPropuesta");
+  if (btnPdf) btnPdf.addEventListener("click", onPdfPropuesta);
 
 
   function isPwaStandalone() {
