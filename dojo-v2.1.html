@@ -1017,16 +1017,16 @@
       </div>
       <div class="row">
         <label for="numTerminales">N&uacute;mero de terminales</label>
-        <input type="number" id="numTerminales" min="1" step="1" value="1" inputmode="numeric" />
+        <input type="number" id="numTerminales" min="1" max="50" step="1" value="1" inputmode="numeric" />
       </div>
       <div class="grid-2 profile-fact-ticket">
         <div class="row">
           <label for="cto">Facturaci&oacute;n mensual con tarjeta (EUR)</label>
-          <input type="number" id="cto" min="0" step="100" value="8000" inputmode="decimal" />
+          <input type="number" id="cto" min="0" max="500000" step="100" value="8000" inputmode="decimal" />
         </div>
         <div class="row">
           <label for="ticket">Ticket medio (EUR)</label>
-          <input type="number" id="ticket" min="0.01" step="0.5" value="15" inputmode="decimal" />
+          <input type="number" id="ticket" min="0.01" max="200" step="0.5" value="15" inputmode="decimal" />
         </div>
       </div>
       <div class="row">
@@ -1070,7 +1070,11 @@
         </div>
       </details>
       <div class="row">
-        <label class="toggle"><input type="checkbox" id="integracion" /> Integraci&oacute;n TPV (+0,10% sobre ventas; terminal integrado 12,50 €/mes sin IVA, ver desglose)</label>
+        <label class="toggle"><input type="checkbox" id="integracion" /> Integraci&oacute;n TPV (+0,10% sobre todo el volumen; terminal integrado 12,50 €/mes sin IVA)</label>
+      <details class="hint" id="integDetalle" style="margin:6px 0 12px 28px;font-size:0.85rem">
+        <summary>Qu&eacute; incluye la integraci&oacute;n</summary>
+        <p style="margin-top:6px;color:#aedcc1">El recargo de +0,10% se aplica sobre <strong>todo el volumen mensual</strong> del TPV integrado (no solo sobre ventas sincronizadas con tu ERP). Incluye: TPV f&iacute;sico, TPV virtual (pagos remotos), liquidaci&oacute;n diaria y soporte prioritario.</p>
+      </details>
       </div>
       <div class="row">
         <label class="toggle"><input type="checkbox" id="mesPrueba" checked /> 1er mes de prueba (sin cuota m&iacute;nima ni alquiler del dat&aacute;fono)
@@ -1096,16 +1100,16 @@
       </div>
       <p class="recom-tarifa" id="recomTarifaText" aria-live="polite"></p>
       <div id="tarifaDesc" class="seg"></div>
-      <div class="fixed-vals">
-        <div class="fixed-item">
+      <div class="fixed-vals" id="fixedVals">
+        <div class="fixed-item" id="cuotaItem">
           <span class="fixed-label">Cuota m&iacute;nima mensual comisiones</span>
-          <span class="fixed-num">29,95&nbsp;EUR</span>
-          <span class="fixed-note">Tramo bajo (39,95 € si fact. anual &gt; 150.000 €). Fijo, no editable</span>
+          <span class="fixed-num" id="fixedCuotaMin">29,95&nbsp;EUR</span>
+          <span class="fixed-note" id="fixedCuotaNote">Tramo bajo. Fijo, no editable</span>
         </div>
-        <div class="fixed-item">
+        <div class="fixed-item" id="alquilerItem">
           <span class="fixed-label">Alquiler terminal / mes sin IVA</span>
-          <span class="fixed-num">9,95&nbsp;EUR</span>
-          <span class="fixed-note">Por terminal sin IVA (12,50 € si integrado Dojo)</span>
+          <span class="fixed-num" id="fixedAlquiler">9,95&nbsp;EUR</span>
+          <span class="fixed-note" id="fixedAlquilerNote">No integrado Dojo. Por terminal sin IVA</span>
         </div>
       </div>
       <div class="penal-box" id="penalDojoBox">
@@ -1392,8 +1396,24 @@
 
   function num(id) {
     var el = document.getElementById(id);
-    var v = parseFloat(String(el && el.value).replace(",", "."));
-    return isFinite(v) ? v : 0;
+    if (!el) return 0;
+    var raw = String(el.value).trim();
+    if (raw === "") {
+      el.setAttribute("aria-invalid", "true");
+      return 0;
+    }
+    var v = parseFloat(raw.replace(",", "."));
+    if (!isFinite(v)) {
+      el.setAttribute("aria-invalid", "true");
+      return 0;
+    }
+    // Validar rango min/max si están definidos
+    var min = parseFloat(el.min);
+    var max = parseFloat(el.max);
+    if (isFinite(min) && v < min) v = min;
+    if (isFinite(max) && v > max) v = max;
+    el.removeAttribute("aria-invalid");
+    return v;
   }
   function bool(id) {
     var el = document.getElementById(id);
@@ -2261,12 +2281,15 @@
         "vs " +
         TARIFAS[others[0]].label + ": " + fmtEuro(totals[others[0]]) + " · " +
         TARIFAS[others[1]].label + ": " + fmtEuro(totals[others[1]]) +
-        "<br>Ahorro anual estimado: <strong style=\"color:#66ff99\">" +
-        // ⚠️ FIX BUG #3 (auditoría 2026-06-17): usar `bestK` (la más barata),
-        // no `chosenK` (la que el usuario eligió manualmente). El hero ya
-        // muestra "Tarifa X: la más barata", así que el ahorro debe ser
-        // coherente con esa afirmación.
+        "<br>Ahorro anual estimado: <strong id=\"heroSaveAnual\" style=\"color:#66ff99\">" +
+        // FIX BUG #3: usar bestK. QW-A6: color dinámico.
         fmtEuro(computeWithTarifaKey(bestK).saveAnual) + "</strong>";
+    // QW-A6: color dinámico del ahorro en hero
+    var _heroSaveEl = document.getElementById("heroSaveAnual");
+    var _heroSaveVal = computeWithTarifaKey(bestK).saveAnual;
+    if (_heroSaveEl) {
+      _heroSaveEl.style.color = _heroSaveVal > 0.5 ? "#66ff99" : (_heroSaveVal < -0.5 ? "#ff6b6b" : "#aedcc1");
+    }
     }
 
     document.getElementById("totalDojo").textContent = fmtEuro(r.totalDojo);
@@ -2277,6 +2300,31 @@
       (r.mesPrueba && r.totalDojoMes2 != null
         ? " \u00b7 1er mes de prueba (sin cuota m\u00ednima ni alquiler). A partir del mes 2: " + fmtEuro(r.totalDojoMes2) + "/mes"
         : "");
+
+    // QW-A5: actualizar .fixed-vals dinámicamente
+    var fcM = document.getElementById("fixedCuotaMin");
+    var fcN = document.getElementById("fixedCuotaNote");
+    var fAl = document.getElementById("fixedAlquiler");
+    var fAn = document.getElementById("fixedAlquilerNote");
+    var cI  = document.getElementById("cuotaItem");
+    var aI  = document.getElementById("alquilerItem");
+    if (fcM && fcN) {
+      var factAnualAux = r.cto * 12;
+      var tramoAlto = factAnualAux > 150000;
+      fcM.textContent = fmtEuro(r.cuotaMin);
+      fcN.textContent = tramoAlto
+        ? "Tramo alto (>150.000 €/año). Fijo, no editable"
+        : "Tramo bajo (→ 39,95 € si fact. anual > 150.000 €). Fijo, no editable";
+      if (cI) cI.style.background = tramoAlto ? "rgba(255,170,0,0.12)" : "";
+      if (cI) cI.style.borderLeft = tramoAlto ? "3px solid #ff9500" : "";
+    }
+    if (fAl && fAn) {
+      fAl.textContent = fmtEuro(r.alquilerEx);
+      fAn.textContent = r.integ
+        ? "Integrado Dojo. Por terminal sin IVA (12,50 €)"
+        : "No integrado. Por terminal sin IVA (→ 12,50 € si integrado)";
+      if (aI) aI.style.background = r.integ ? "rgba(120,180,255,0.10)" : "";
+    }
 
     var kv = document.getElementById("kv");
     var integRows = "";
@@ -2302,7 +2350,9 @@
       compRows +
       "<span>Competencia total</span><span>" + fmtEuro(r.totalComp) + "</span>" +
       (r.mesPrueba ? "<span>1er mes de prueba (sin cuota mínima ni alquiler)</span><span>incluido</span>" : "") +
-      "<span>Ahorro anual vs competencia</span><span style=\"color:#66ff99\">" + fmtEuro(r.saveAnual) + "</span>";
+      "<span>Ahorro anual vs competencia</span><span id=\"kvSaveAnual\" style=\"color:#66ff99\">" + fmtEuro(r.saveAnual) + "</span>";
+    var _kvS = document.getElementById("kvSaveAnual");
+    if (_kvS) { _kvS.style.color = r.saveAnual > 0.5 ? "#66ff99" : (r.saveAnual < -0.5 ? "#ff6b6b" : "#aedcc1"); }
 
     var saveLine = document.getElementById("saveLine");
     if (r.save > 0) {
@@ -2368,6 +2418,65 @@
   });
   var sd = document.getElementById("sliderDebit");
   if (sd) sd.addEventListener("input", onSliderDebit);
+
+  // === Persistencia localStorage (QW-A2) ===
+  var STATE_KEY = "dojoCalcState";
+  function saveState() {
+    try {
+      var s = {};
+      ["cto","ticket","numTerminales","integracion","mesPrueba","useMixta",
+       "pctBiz","pctEu","pctNonEu","pctOpsPenalDojo","tarifa",
+       "dayVol","dayFee","compPct","compFijo","compAlquilerTerm",
+       "nombreCliente","nombrePc","telefonoPc"].forEach(function(id){
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (el.type === "checkbox") s[id] = el.checked;
+        else s[id] = el.value;
+      });
+      localStorage.setItem(STATE_KEY, JSON.stringify(s));
+    } catch(e) { /* localStorage no disponible */ }
+  }
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STATE_KEY);
+      if (!raw) return false;
+      var s = JSON.parse(raw);
+      var restored = false;
+      Object.keys(s).forEach(function(id){
+        var el = document.getElementById(id);
+        if (!el || s[id] == null) return;
+        if (el.type === "checkbox") { el.checked = !!s[id]; restored = true; }
+        else if (el.value !== s[id]) { el.value = s[id]; restored = true; }
+      });
+      return restored;
+    } catch(e) { return false; }
+  }
+  function clearState() {
+    try { localStorage.removeItem(STATE_KEY); } catch(e) {}
+  }
+  // Auto-save con debounce 500ms
+  var saveTimer = null;
+  function saveStateDebounced() {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveState, 500);
+  }
+  // Enganchar auto-save a todos los inputs
+  document.querySelectorAll("input, select").forEach(function(el){
+    el.addEventListener("input", saveStateDebounced);
+    el.addEventListener("change", saveStateDebounced);
+  });
+  // Restaurar al cargar
+  var _restored = loadState();
+  if (_restored) {
+    setTimeout(function(){
+      var t = document.createElement("div");
+      t.textContent = "✓ Datos restaurados de la última sesión";
+      t.style.cssText = "position:fixed;top:12px;left:50%;transform:translateX(-50%);background:#0a3d1f;color:#aedcc1;padding:10px 16px;border-radius:8px;z-index:9999;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.4);transition:opacity 0.4s";
+      document.body.appendChild(t);
+      setTimeout(function(){ t.style.opacity = "0"; }, 2500);
+      setTimeout(function(){ t.remove(); }, 3000);
+    }, 100);
+  }
   var btnPrint = document.getElementById("btnImprimirPropuesta");
   if (btnPrint) btnPrint.addEventListener("click", onImprimirPropuesta);
   var btnEmail = document.getElementById("btnEmailPropuesta");
