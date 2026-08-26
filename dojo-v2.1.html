@@ -1070,7 +1070,10 @@
         </div>
       </details>
       <div class="row">
-        <label class="toggle"><input type="checkbox" id="integracion" /> Integraci&oacute;n TPV (+0,10% sobre ventas; terminal integrado 15 EUR una vez, ver desglose)</label>
+        <label class="toggle"><input type="checkbox" id="integracion" /> Integraci&oacute;n TPV (+0,10% sobre ventas; terminal integrado 12,50 €/mes sin IVA, ver desglose)</label>
+      </div>
+      <div class="row">
+        <label class="toggle"><input type="checkbox" id="mesPrueba" checked /> 1er mes de prueba (sin cuota m&iacute;nima ni alquiler del dat&aacute;fono)
       </div>
     </section>
 
@@ -1096,13 +1099,13 @@
       <div class="fixed-vals">
         <div class="fixed-item">
           <span class="fixed-label">Cuota m&iacute;nima mensual comisiones</span>
-          <span class="fixed-num">24,95&nbsp;EUR</span>
-          <span class="fixed-note">Fijo, no editable</span>
+          <span class="fixed-num">29,95&nbsp;EUR</span>
+          <span class="fixed-note">Tramo bajo (39,95 € si fact. anual &gt; 150.000 €). Fijo, no editable</span>
         </div>
         <div class="fixed-item">
           <span class="fixed-label">Alquiler terminal / mes sin IVA</span>
-          <span class="fixed-num">5,00&nbsp;EUR</span>
-          <span class="fixed-note">Por terminal, sin IVA</span>
+          <span class="fixed-num">9,95&nbsp;EUR</span>
+          <span class="fixed-note">Por terminal sin IVA (12,50 € si integrado Dojo)</span>
         </div>
       </div>
       <div class="penal-box" id="penalDojoBox">
@@ -1161,7 +1164,7 @@
     <section class="card results" id="resultsBox">
       <h2>Tu oferta Dojo</h2>
       <div class="big-num" id="totalDojo">--</div>
-      <div class="sub" id="totalSub">Coste mensual estimado (comisiones + m&iacute;nimo + alquiler terminales sin IVA). El terminal integrado 15 EUR es &uacute;nico, no entra aqu&iacute;.</div>
+      <div class="sub" id="totalSub">Coste mensual estimado (comisiones + m&iacute;nimo + alquiler terminales sin IVA). El terminal integrado 12,50\u202f\u20ac/mes y el no integrado 9,95\u202f\u20ac/mes (sin IVA) se incluyen en el subtotal al activar integraci&oacute;n.</div>
       <div class="kv" id="kv"></div>
       <div class="pill-save" id="saveLine"></div>
     </section>
@@ -1321,8 +1324,10 @@
   <script>
 (function () {
   "use strict";
-  var CUOTA_MIN_FIJA = 24.95;
-  var ALQUILER_SIN_IVA_FIJO = 5;
+  var CUOTA_MIN_FIJA = { bajo: 29.95, alto: 39.95 };   // €/mes sin IVA · ≤150k€ / >150k€ anual
+  var ALQUILER_NO_INTEG  = 9.95;                        // €/mes sin IVA · terminal no integrado
+  var ALQUILER_INTEG     = 12.50;                       // €/mes sin IVA · terminal integrado Dojo
+  var UMBRAL_FACT_ANUAL  = 150000;                      // € / año para subir al tramo alto
   var TARIFAS = {
     "1": {
       label: "Tarifa 1",
@@ -1493,12 +1498,18 @@
     var pctNonEu = Math.max(0, num("pctNonEu"));
     var sumSpec = pctBiz + pctEu + pctNonEu;
     var nat = Math.max(0, 100 - sumSpec);
-    var cuotaMin = CUOTA_MIN_FIJA;
-    var alquilerEx = ALQUILER_SIN_IVA_FIJO;
     var numTerminales = intMin("numTerminales", 1);
+    var integ        = bool("integracion");
+    // Tramo por facturación ANUAL (input cto es MENSUAL → ×12)
+    var factAnual    = cto * 12;
+    var cuotaMin     = factAnual > UMBRAL_FACT_ANUAL
+                       ? CUOTA_MIN_FIJA.alto
+                       : CUOTA_MIN_FIJA.bajo;
+    var alquilerEx   = integ ? ALQUILER_INTEG : ALQUILER_NO_INTEG;
+    // Mes de prueba: ni MMSC ni alquiler en el mes 1
+    var mesPrueba    = bool("mesPrueba");
     var T = TARIFAS[tarifaKey] || TARIFAS["1"];
     var useMix = bool("useMixta");
-    var integ = bool("integracion");
     var n = cto / ticket;
     var volNat = cto * (nat / 100);
     var volBiz = cto * (pctBiz / 100);
@@ -1572,10 +1583,22 @@
 
     var varComm = varNatComm + nBiz * bizFeePerTxn() + nEu * euFeePerTxn() + nNon * nonEuFeePerTxn();
     if (integ) varComm += cto * T.integRate;
-    var afterMin = Math.max(varComm, cuotaMin);
-    var alquilerSinIva = alquilerEx * numTerminales;
-    var alquilerIva = alquilerSinIva * (1 + ivaPct / 100);
-    var totalDojo = afterMin + alquilerSinIva;
+    // Mes 1 de prueba: solo comisiones reales (sin MMSC ni alquiler)
+    // Mes 2+: MMSC si comisiones < MMSC, + alquiler
+    var afterMin        = mesPrueba
+                          ? varComm
+                          : Math.max(varComm, cuotaMin);
+    var alquilerSinIva  = mesPrueba ? 0 : alquilerEx * numTerminales;
+    var alquilerIva     = alquilerSinIva * (1 + ivaPct / 100);
+    var totalDojo       = afterMin + alquilerSinIva;
+    // Para coherencia del anual: el "Coste mensual" mostrado es el del mes 2+
+    // (mes normal con MMSC y alquiler). El mes de prueba se muestra aparte.
+    var afterMinNormal  = Math.max(varComm, cuotaMin);
+    var alquilerNormal  = alquilerEx * numTerminales;
+    var totalDojoMes2   = afterMinNormal + alquilerNormal;
+    var totalDojoAnual  = mesPrueba
+                          ? totalDojo + totalDojoMes2 * 11
+                          : totalDojo * 12;
     var compTmp = { n: n, ticket: ticket, numTerminales: numTerminales, T: T, tarifaKey: tarifaKey };
     var comp = computeCompetenciaTotals(compTmp);
     var totalComp = comp.totalComp;
@@ -1591,13 +1614,19 @@
       alquilerSinIva: alquilerSinIva,
       alquilerIva: alquilerIva,
       numTerminales: numTerminales,
-      totalDojo: totalDojo,
+      totalDojo: totalDojo,            // mes 1 si prueba, mes 2+ si no
+      totalDojoMes2: totalDojoMes2,    // coste del mes 2+ (referencia anual)
+      totalDojoAnual: totalDojoAnual,  // 1 + 11·mes2 si prueba, 12·mes1 si no
       totalComp: totalComp,
+      totalCompAnual: totalComp * 12,
       compComision: comp.compComision,
       compAlquiler: comp.compAlquiler,
       compFijo: comp.compFijo,
       save: save,
+      saveAnual: (totalComp * 12) - totalDojoAnual,
       savePrint: save,
+      savePrintAnual: ((totalComp * 12) - totalDojoAnual),
+      mesPrueba: mesPrueba,
       nat: nat,
       T: T,
       useMix: useMix,
@@ -1703,7 +1732,7 @@
       box.classList.add("is-disabled");
       inp.disabled = true;
       inp.value = "0";
-      st.innerHTML = "<strong>Tarifa 3:</strong> cobra solo el % sobre ventas. No hay m\u00ednimo por operaci\u00f3n, pero la cuota m\u00ednima mensual de 24,95\u202f\u20ac se aplica si las comisiones no la superan.";
+      st.innerHTML = "<strong>Tarifa 3:</strong> cobra solo el % sobre ventas. No hay m\u00ednimo por operaci\u00f3n, pero la cuota m\u00ednima mensual de 29,95\u202f\u20ac (o 39,95\u202f\u20ac si facturaci\u00f3n anual &gt; 150.000\u202f\u20ac) se aplica si las comisiones no la superan.";
       syncPenalSliderLabel();
       return;
     }
@@ -1893,7 +1922,7 @@
     var saveBlock = document.getElementById("printSaveBlock");
     if (p.savePrint > 0) {
       if (saveBlock) saveBlock.style.display = "";
-      setPrintText("printAhorroAnual", fmtEuroPrint(p.savePrint * 12));
+      setPrintText("printAhorroAnual", fmtEuroPrint(p.savePrintAnual));
       setPrintText("printAhorroMensual", fmtEuroPrint(p.savePrint) + " cada mes en caja");
     } else if (saveBlock) {
       saveBlock.style.display = "none";
@@ -1911,7 +1940,7 @@
     setPrintText("printCompMensual", fmtEuroPrint(p.totalCompPrint));
     setPrintText("printDojoMensual", fmtEuroPrint(p.totalDojoPrint));
     setPrintText("printCompAnual", fmtEuroPrint(p.totalCompPrint * 12));
-    setPrintText("printDojoAnual", fmtEuroPrint(p.totalDojoPrint * 12));
+    setPrintText("printDojoAnual", fmtEuroPrint(p.totalDojoAnual));
 
     var notaProv = "* Proveedor: " + fmtPct(compPctVal);
     var notaDojo = useMix
@@ -2039,7 +2068,7 @@
     if (telPc) contacto.push(telPc);
     var contactoStr = contacto.length ? contacto.join(" \u00b7 ") : "(tu contacto)";
     var ahorroMes = r.save;
-    var ahorroAnio = r.save * 12;
+    var ahorroAnio = r.saveAnual;
     return [
       "Hola " + nombreComercio + ",",
       "",
@@ -2081,7 +2110,7 @@
     var text =
       "Propuesta DOJO para " + nombreComercio + "\n" +
       "Tarifa " + tarifa + " \u00b7 Coste mensual " + fmtEuro(r.totalDojo) +
-      " \u00b7 Ahorro anual " + fmtEuro(r.save * 12) +
+      " \u00b7 Ahorro anual " + fmtEuro(r.saveAnual) +
       "\n\n(Generado desde la calculadora DOJO)";
     var url = (typeof window !== "undefined" && window.location) ? window.location.href : "";
     if (navigator && typeof navigator.share === "function") {
@@ -2199,7 +2228,7 @@
         // no `chosenK` (la que el usuario eligió manualmente). El hero ya
         // muestra "Tarifa X: la más barata", así que el ahorro debe ser
         // coherente con esa afirmación.
-        fmtEuro(computeWithTarifaKey(bestK).save * 12) + "</strong>";
+        fmtEuro(computeWithTarifaKey(bestK).saveAnual) + "</strong>";
     }
 
     document.getElementById("totalDojo").textContent = fmtEuro(r.totalDojo);
@@ -2213,7 +2242,7 @@
     if (r.integ) {
       integRows =
         "<span>Recargo integraci\u00f3n (0,10% sobre TPV)</span><span>" + fmtEuro(r.integExtra) + "</span>" +
-        "<span>Terminal integrado (\u00fanico)</span><span>15,00 EUR</span>";
+        "<span>Terminal integrado Dojo (recurrente)</span><span>12,50 EUR/mes sin IVA</span>";
     }
     var compRows =
       "<span>Competencia comisi\u00f3n</span><span>" + fmtEuro(r.compComision) + "</span>" +
@@ -2231,7 +2260,8 @@
       "<span>Terminales \u00d7" + r.numTerminales + " (sin IVA)</span><span>" + fmtEuro(r.alquilerSinIva) + "</span>" +
       compRows +
       "<span>Competencia total</span><span>" + fmtEuro(r.totalComp) + "</span>" +
-      "<span>Ahorro anual vs competencia</span><span style=\"color:#66ff99\">" + fmtEuro(r.save * 12) + "</span>";
+      (r.mesPrueba ? "<span>1er mes de prueba (sin cuota mínima ni alquiler)</span><span>incluido</span>" : "") +
+      "<span>Ahorro anual vs competencia</span><span style=\"color:#66ff99\">" + fmtEuro(r.saveAnual) + "</span>";
 
     var saveLine = document.getElementById("saveLine");
     if (r.save > 0) {
@@ -2239,8 +2269,8 @@
         "Con estos datos, Dojo queda <strong>" +
         fmtEuro(r.save) +
         "</strong> por debajo al mes vs tu referencia (~<strong>" +
-        fmtEuro(r.save * 12) +
-        "</strong> al a\u00f1o).";
+        fmtEuro(r.saveAnual) +
+        "</strong> al a\u00f1o.";
     } else if (r.save < 0) {
       saveLine.innerHTML =
         "La referencia de competencia queda por debajo; ajusta % competidor o revisa mix de tarjetas / tarifa negociada.";
