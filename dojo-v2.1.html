@@ -1464,6 +1464,19 @@
     var alquilerPrint = usarMes2 ? (r.alquilerEx * r.numTerminales) : r.alquilerSinIva;
     var dojoComision  = usarMes2 ? Math.max(r.varComm, r.cuotaMin) : r.afterMin;
     var totalDojoPrint = dojoComision + alquilerPrint;
+    // Para el ahorro anual impreso: 1·mes1 + 11·mes2 si prueba, 12·mes2 si no.
+    // Pero como aquí totalDojoPrint SIEMPRE es el coste del mes 2+ (con MMSC),
+    // y queremos coherencia con la pantalla (que muestra mes1 con prueba),
+    // usamos r.saveAnual si está disponible.
+    var savePrintAnual = (r.saveAnual != null)
+      ? r.saveAnual
+      : (comp.totalComp * 12) - (totalDojoPrint * (r.mesPrueba ? 1 : 12));
+    // Total anual Dojo impreso: si r.totalDojoAnual está (computeWithTarifaKey),
+    // úsalo (coherente con pantalla); si no, fallback.
+    var totalDojoAnualPrint = (r.totalDojoAnual != null)
+      ? r.totalDojoAnual
+      : (r.mesPrueba ? totalDojoPrint + (Math.max(r.varComm, r.cuotaMin) + (r.alquilerEx * r.numTerminales)) * 11 : totalDojoPrint * 12);
+    var totalCompAnualPrint = (r.totalCompAnual != null) ? r.totalCompAnual : comp.totalComp * 12;
     return {
       compComision: comp.compComision,
       dojoComision: dojoComision,
@@ -1472,6 +1485,9 @@
       totalCompPrint: comp.totalComp,
       totalDojoPrint: totalDojoPrint,
       savePrint: comp.totalComp - totalDojoPrint,
+      savePrintAnual: savePrintAnual,
+      totalDojoAnual: totalDojoAnualPrint,
+      totalCompAnual: totalCompAnualPrint,
       pctPenPct: comp.pctPenPct
     };
   }
