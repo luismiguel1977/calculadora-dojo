@@ -1247,7 +1247,7 @@
               </div>
             </div>
           </section>
-          <p class="prop-trial"><strong>1er mes de prueba sin compromiso.</strong> Si no te convence, devuelves el equipo. As&iacute; de simple.</p>
+          <p class="prop-trial"><strong>1er mes de prueba sin compromiso.</strong> En este primer mes no paga cuota m&iacute;nima ni alquiler del dat&aacute;fono: solo las comisiones reales por las ventas cobradas con tarjeta. Si no te convence, devuelves el equipo. As&iacute; de simple.</p>
           <div class="prop-benefits">
             <span>Liquidaci&oacute;n diaria</span>
             <span>Dat&aacute;fono Android</span>
@@ -1284,9 +1284,14 @@
                   <td class="col-dojo" id="printDojoAlquiler">--</td>
                 </tr>
                 <tr class="prop-total">
-                  <td>Total mensual</td>
+                  <td>Total mensual <span style="font-weight:400;font-size:8pt;color:#888">(a partir del mes 2)</span></td>
                   <td class="col-prov" id="printCompMensual">--</td>
                   <td class="col-dojo" id="printDojoMensual">--</td>
+                </tr>
+                <tr id="printTrialRow" style="display:none">
+                  <td style="font-weight:400;color:#666">1er mes de prueba (sin cuota m&iacute;nima ni alquiler)</td>
+                  <td class="col-prov" id="printCompMes1">&nbsp;</td>
+                  <td class="col-dojo" id="printDojoMes1">&nbsp;</td>
                 </tr>
                 <tr class="prop-total prop-total-annual">
                   <td>Total anual</td>
@@ -1453,8 +1458,11 @@
 
   function computePrintComparativa(r) {
     var comp = computeCompetenciaTotals(r);
-    var alquilerPrint = r.alquilerSinIva;
-    var dojoComision = r.afterMin;
+    // La propuesta impresa muestra SIEMPRE el coste del mes 2+ (con MMSC y alquiler),
+    // independientemente del mes de prueba. El mes 1 se anota aparte como beneficio.
+    var usarMes2 = r.mesPrueba && r.totalDojoMes2 != null;
+    var alquilerPrint = usarMes2 ? (r.alquilerEx * r.numTerminales) : r.alquilerSinIva;
+    var dojoComision  = usarMes2 ? Math.max(r.varComm, r.cuotaMin) : r.afterMin;
     var totalDojoPrint = dojoComision + alquilerPrint;
     return {
       compComision: comp.compComision,
@@ -1627,6 +1635,7 @@
       savePrint: save,
       savePrintAnual: ((totalComp * 12) - totalDojoAnual),
       mesPrueba: mesPrueba,
+      alquilerEx: alquilerEx,
       nat: nat,
       T: T,
       useMix: useMix,
@@ -1941,6 +1950,19 @@
     setPrintText("printDojoMensual", fmtEuroPrint(p.totalDojoPrint));
     setPrintText("printCompAnual", fmtEuroPrint(p.totalCompPrint * 12));
     setPrintText("printDojoAnual", fmtEuroPrint(p.totalDojoAnual));
+    // Fila condicional del 1er mes de prueba
+    var trialRow = document.getElementById("printTrialRow");
+    if (trialRow) {
+      if (r.mesPrueba) {
+        trialRow.style.display = "";
+        var mes1Dojo = r.varComm;  // mes 1 = solo comisiones (sin MMSC, sin alquiler)
+        var mes1Comp = r.totalComp;
+        setPrintText("printDojoMes1", fmtEuroPrint(mes1Dojo));
+        setPrintText("printCompMes1", fmtEuroPrint(mes1Comp));
+      } else {
+        trialRow.style.display = "none";
+      }
+    }
 
     var notaProv = "* Proveedor: " + fmtPct(compPctVal);
     var notaDojo = useMix
@@ -2235,7 +2257,10 @@
     document.getElementById("totalSub").textContent =
       "Comisiones variables " + fmtEuro(r.varComm) +
       (r.afterMin > r.varComm ? " \u2192 aplicado m\u00ednimo " + fmtEuro(r.cuotaMin) : "") +
-      " + alquiler " + r.numTerminales + " terminal(es) sin IVA " + fmtEuro(r.alquilerSinIva);
+      " + alquiler " + r.numTerminales + " terminal(es) sin IVA " + fmtEuro(r.alquilerSinIva) +
+      (r.mesPrueba && r.totalDojoMes2 != null
+        ? " \u00b7 1er mes de prueba (sin cuota m\u00ednima ni alquiler). A partir del mes 2: " + fmtEuro(r.totalDojoMes2) + "/mes"
+        : "");
 
     var kv = document.getElementById("kv");
     var integRows = "";
