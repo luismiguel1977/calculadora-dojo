@@ -1,5 +1,5 @@
 /* Service worker — Calculadora Dojo */
-var CACHE = "dojo-calc-v2.5";
+var CACHE = "dojo-calc-v2.6";  // QW-cache-bump: invalidar cache tras sprint UX
 var PRECACHE = [
   "./",
   "./index.html",
