@@ -2127,24 +2127,30 @@
     var contactoStr = contacto.length ? contacto.join(" \u00b7 ") : "(tu contacto)";
     var ahorroMes = r.save;
     var ahorroAnio = r.saveAnual;
-    return [
+    var mes1 = r.totalDojo;
+    var mes2 = r.totalDojoMes2;
+    var lines = [
       "Hola " + nombreComercio + ",",
       "",
-      "Te adjunto la propuesta personalizada de DOJO con los datos que hemos revisado:",
+      "Te paso el resumen de la propuesta personalizada de DOJO con los datos que hemos revisado:",
       "",
-      "- Tarifa propuesta: " + tarifa,
-      "- Coste mensual estimado Dojo: " + fmtEuro(p.totalDojoPrint),
+      "\u2728 TARIFA " + tarifa,
+      "- Coste mensual Dojo (a partir del mes 2): " + fmtEuro(mes2),
       "- Coste mensual competencia: " + fmtEuro(p.totalCompPrint),
-      "- Ahorro mensual: " + fmtEuro(ahorroMes),
-      "- Ahorro anual estimado: " + fmtEuro(ahorroAnio),
       "",
-      "La propuesta detallada (PDF) la imprimimos / exportamos en la app. Si quieres, te la env\u00edo adjunta por otro canal.",
+      "\u{1F4B0} AHORRO",
+      "- Mensual: " + fmtEuro(ahorroMes),
+      "- Anual estimado: " + fmtEuro(ahorroAnio),
+      "",
+      "\u{1F389} PRIMER MES DE PRUEBA",
+      "En el primer mes no pagas cuota m\u00ednima ni alquiler del dat\u00e1fono: solo las comisiones reales por las ventas cobradas con tarjeta (" + fmtEuro(mes1) + "). Si no te convence, devuelves el equipo.",
       "",
       "Cualquier duda, escr\u00edbeme.",
       "",
       contactoStr,
       "Equipo DOJO"
-    ].join("\n");
+    ];
+    return lines.join("\n");
   }
 
   function onEmailPropuesta() {
