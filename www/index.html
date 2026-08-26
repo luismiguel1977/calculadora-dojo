@@ -2337,7 +2337,7 @@
     document.getElementById("resultsBox").style.opacity = "1";
   }
 
-  ["cto", "ticket", "pctBiz", "pctEu", "pctNonEu", "compPct", "compFijo", "compAlquilerTerm", "pctOpsPenalDojo", "tarifa", "dayVol", "dayFee", "numTerminales", "nombreCliente", "nombrePc", "telefonoPc"].forEach(function (id) {
+  ["cto", "ticket", "pctBiz", "pctEu", "pctNonEu", "compPct", "compFijo", "compAlquilerTerm", "pctOpsPenalDojo", "tarifa", "dayVol", "dayFee", "numTerminales", "nombreCliente", "nombrePc", "telefonoPc", "mesPrueba"].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.addEventListener("input", render);
     if (el) el.addEventListener("change", render);
