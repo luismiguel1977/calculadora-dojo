@@ -1048,27 +1048,23 @@
           Con mixta activa no aplica la mezcla d&eacute;bito/cr&eacute;dito; se usa un solo porcentaje sobre nacional.
         </div>
       </div>
-      <details class="advanced-cards" id="advancedCards">
-        <summary>Otros tipos de tarjeta (empresa, UE, fuera de UE)</summary>
-        <div class="advanced-cards-inner">
-          <div class="grid-2">
-            <div class="row">
-              <label for="pctBiz">% Volumen empresa / business</label>
-              <input type="number" id="pctBiz" min="0" max="100" value="0" step="1" inputmode="decimal" />
-            </div>
-            <div class="row">
-              <label for="pctEu">% Tarjeta UE no nacional</label>
-              <input type="number" id="pctEu" min="0" max="100" value="0" inputmode="decimal" />
-            </div>
-          </div>
-          <div class="row">
-            <label for="pctNonEu">% Tarjeta fuera de UE</label>
-            <input type="number" id="pctNonEu" min="0" max="100" value="0" inputmode="decimal" />
-          </div>
-          <p class="hint" style="margin-top:0">El resto del volumen se trata como nacional. La suma no debe superar 100%.</p>
-          <p class="warn-box" id="sumSpecWarn" role="alert" hidden>⚠ La suma de los tipos de tarjeta supera 100%. Revisa los valores.</p>
+      <h3 style="margin:14px 0 4px;font-size:0.95rem">Tipo de tarjeta (empresa · UE · fuera de UE)</h3>
+      <p class="hint" style="margin:2px 0 8px">El resto del volumen se trata como nacional. La suma no debe superar 100%.</p>
+      <div class="grid-2">
+        <div class="row">
+          <label for="pctBiz">% Volumen empresa / business</label>
+          <input type="number" id="pctBiz" min="0" max="100" value="0" step="1" inputmode="decimal" />
         </div>
-      </details>
+        <div class="row">
+          <label for="pctEu">% Tarjeta UE no nacional</label>
+          <input type="number" id="pctEu" min="0" max="100" value="0" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="row">
+        <label for="pctNonEu">% Tarjeta fuera de UE <span style="color:#1d6f42">(activa cashback 2%)</span></label>
+        <input type="number" id="pctNonEu" min="0" max="100" value="0" inputmode="decimal" />
+      </div>
+      <p class="warn-box" id="sumSpecWarn" role="alert" hidden>⚠ La suma de los tipos de tarjeta supera 100%. Revisa los valores.</p>
       <div class="row">
         <label class="toggle"><input type="checkbox" id="integracion" /> Integraci&oacute;n TPV (+0,10% sobre todo el volumen; terminal integrado 12,50 €/mes sin IVA)</label>
       <details class="hint" id="integDetalle" style="margin:6px 0 12px 28px;font-size:0.85rem">
