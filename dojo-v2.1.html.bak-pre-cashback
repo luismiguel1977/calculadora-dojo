@@ -1206,8 +1206,8 @@
     </section>
 
     <footer>
-      Calculadora Dojo v2.6
-      <br><small style="opacity:0.75">Solo para uso interno de la compa&ntilde;&iacute;a · incluye cashback no-UE (2%)</small>
+      Calculadora Dojo v2.7
+      <br><small style="opacity:0.75">Solo para uso interno de la compa&ntilde;&iacute;a</small>
     </footer>
   </div>
 
@@ -1270,7 +1270,6 @@
             <p class="prop-save-annual" id="printAhorroAnual">--</p>
             <p class="prop-save-sub">de ahorro al a&ntilde;o</p>
             <p class="prop-save-monthly" id="printAhorroMensual">--</p>
-            <p class="prop-cashback" id="printCashbackLine" hidden style="margin-top:6px;font-size:10pt;color:#003f33;background:#e9f0ee;padding:4px 8px;border-radius:4px">+ Cashback no-UE (2%): <strong id="printCashbackAnual">--</strong></p>
           </section>
           <section>
             <p class="prop-table-title">Comparativa de costes</p>
@@ -1343,11 +1342,6 @@
   var ALQUILER_NO_INTEG  = 9.95;                        // €/mes sin IVA · terminal no integrado
   var ALQUILER_INTEG     = 12.50;                       // €/mes sin IVA · terminal integrado Dojo
   var UMBRAL_FACT_ANUAL  = 150000;                      // € / año para subir al tramo alto
-  // CASHBACK no-UE: Dojo cobra un recargo FX (típico 6%) al titular de la tarjeta
-  // fuera de UE y devuelve un % del volumen no-UE al comercio como cashback.
-  // Por defecto 2%. NO es coste del comercio: se suma al ahorro total.
-  var CASHBACK_FX_TURISTA   = 0.06;   // recargo FX informativo sobre turista (no toca factura del comercio)
-  var CASHBACK_PCT_MERCHANT = 0.02;   // 2% del volumen no-UE que vuelve al comercio
   var TARIFAS = {
     "1": {
       label: "Tarifa 1",
@@ -1638,10 +1632,6 @@
 
     var varComm = varNatComm + nBiz * bizFeePerTxn() + nEu * euFeePerTxn() + nNon * nonEuFeePerTxn();
     if (integ) varComm += cto * T.integRate;
-    // CASHBACK no-UE: Dojo cobra 6% FX al turista y devuelve 2% al comercio
-    // (CASHBACK_PCT_MERCHANT definido junto a TARIFAS).
-    var cashbackMensual = volNonEu * CASHBACK_PCT_MERCHANT;
-    var cashbackAnual = cashbackMensual * 12;
     // Mes 1 de prueba: solo comisiones reales (sin MMSC ni alquiler)
     // Mes 2+: MMSC si comisiones < MMSC, + alquiler
     var afterMin        = mesPrueba
@@ -1682,11 +1672,9 @@
       compAlquiler: comp.compAlquiler,
       compFijo: comp.compFijo,
       save: save,
-      saveAnual: ((totalComp * 12) - totalDojoAnual) + cashbackAnual,
-      savePrint: save + cashbackMensual,
-      savePrintAnual: ((totalComp * 12) - totalDojoAnual) + cashbackAnual,
-      cashbackMensual: cashbackMensual,
-      cashbackAnual: cashbackAnual,
+      saveAnual: (totalComp * 12) - totalDojoAnual,
+      savePrint: save,
+      savePrintAnual: ((totalComp * 12) - totalDojoAnual),
       mesPrueba: mesPrueba,
       alquilerEx: alquilerEx,
       nat: nat,
@@ -1985,29 +1973,9 @@
     if (p.savePrint > 0) {
       if (saveBlock) saveBlock.style.display = "";
       setPrintText("printAhorroAnual", fmtEuroPrint(p.savePrintAnual));
-      var ahoroMensualLbl = fmtEuroPrint(p.savePrint) + " cada mes en caja";
-      if (r.cashbackMensual > 0) {
-        ahoroMensualLbl += "  (incluye cashback no-UE +" + fmtEuroPrint(r.cashbackMensual) + "/mes)";
-        // Línea destacada dentro del save box
-        var cbLine = document.getElementById("printCashbackLine");
-        if (cbLine) {
-          cbLine.hidden = false;
-          setPrintText("printCashbackAnual", fmtEuroPrint(r.cashbackAnual) + "/año extra");
-        }
-      } else {
-        var cbLine2 = document.getElementById("printCashbackLine");
-        if (cbLine2) cbLine2.hidden = true;
-      }
-      setPrintText("printAhorroMensual", ahoroMensualLbl);
+      setPrintText("printAhorroMensual", fmtEuroPrint(p.savePrint) + " cada mes en caja");
     } else if (saveBlock) {
       saveBlock.style.display = "none";
-      // Reset explícito: si una propuesta anterior dejó textos con cashback y ahora Dojo ya no ahorra,
-      // dejamos el bloque oculto pero los textos limpios por si se vuelve a mostrar.
-      setPrintText("printAhorroAnual", fmtEuroPrint(p.savePrintAnual));
-      setPrintText("printAhorroMensual", fmtEuroPrint(p.savePrint));
-      var cbLine3 = document.getElementById("printCashbackLine");
-      if (cbLine3) cbLine3.hidden = true;
-      setPrintText("printCashbackAnual", "");
     }
 
     setPrintText("printRowComLabel", "Comisi\u00f3n sobre\n" + fmtEuroPrint(r.cto));
@@ -2178,9 +2146,6 @@
       "\u{1F4B0} AHORRO",
       "- Mensual: " + fmtEuro(ahorroMes),
       "- Anual estimado: " + fmtEuro(ahorroAnio),
-      (r.cashbackMensual > 0
-        ? "- Incluye cashback no-UE: +" + fmtEuro(r.cashbackMensual) + "/mes (+" + fmtEuro(r.cashbackAnual) + "/año extra por turismo)"
-        : ""),
       "",
       "\u{1F389} PRIMER MES DE PRUEBA",
       "En el primer mes no pagas cuota m\u00ednima ni alquiler del dat\u00e1fono: solo las comisiones reales por las ventas cobradas con tarjeta (" + fmtEuro(mes1) + "). Si no te convence, devuelves el equipo.",
@@ -2396,9 +2361,6 @@
       compRows +
       "<span>Competencia total</span><span>" + fmtEuro(r.totalComp) + "</span>" +
       (r.mesPrueba ? "<span>1er mes de prueba (sin cuota mínima ni alquiler)</span><span>incluido</span>" : "") +
-      (r.cashbackMensual > 0
-        ? "<span style=\"color:#66ff99\">Cashback no-UE (2% sobre turismo)</span><span style=\"color:#66ff99\">+" + fmtEuro(r.cashbackMensual) + "/mes</span>"
-        : "") +
       "<span>Ahorro anual vs competencia</span><span id=\"kvSaveAnual\" style=\"color:#66ff99\">" + fmtEuro(r.saveAnual) + "</span>";
     var _kvS = document.getElementById("kvSaveAnual");
     if (_kvS) { _kvS.style.color = r.saveAnual > 0.5 ? "#66ff99" : (r.saveAnual < -0.5 ? "#ff6b6b" : "#aedcc1"); }
